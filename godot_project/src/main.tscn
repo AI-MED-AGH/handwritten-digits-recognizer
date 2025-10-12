@@ -1,0 +1,92 @@
+[gd_scene load_steps=5 format=3 uid="uid://q6c8bkmou1yy"]
+
+[ext_resource type="Script" uid="uid://dg6ba52hreo2x" path="res://src/main.gd" id="1_gh0ne"]
+[ext_resource type="Script" uid="uid://dnm3mdly0l5mt" path="res://src/digits_container.gd" id="2_3cfgd"]
+[ext_resource type="Script" uid="uid://b5u8dtd800hil" path="res://src/Canvas.gd" id="2_5q4o7"]
+[ext_resource type="PackedScene" uid="uid://cumrabrub5omu" path="res://src/Digit/Digit.tscn" id="3_3cfgd"]
+
+[node name="main" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_gh0ne")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="DigitsContainer" type="HBoxContainer" parent="VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+alignment = 1
+script = ExtResource("2_3cfgd")
+
+[node name="Digit0" parent="VBoxContainer/DigitsContainer" instance=ExtResource("3_3cfgd")]
+layout_mode = 2
+
+[node name="Digit1" parent="VBoxContainer/DigitsContainer" instance=ExtResource("3_3cfgd")]
+layout_mode = 2
+
+[node name="Digit2" parent="VBoxContainer/DigitsContainer" instance=ExtResource("3_3cfgd")]
+layout_mode = 2
+
+[node name="Digit3" parent="VBoxContainer/DigitsContainer" instance=ExtResource("3_3cfgd")]
+layout_mode = 2
+
+[node name="Digit4" parent="VBoxContainer/DigitsContainer" instance=ExtResource("3_3cfgd")]
+layout_mode = 2
+
+[node name="Digit5" parent="VBoxContainer/DigitsContainer" instance=ExtResource("3_3cfgd")]
+layout_mode = 2
+
+[node name="Digit6" parent="VBoxContainer/DigitsContainer" instance=ExtResource("3_3cfgd")]
+layout_mode = 2
+
+[node name="Digit7" parent="VBoxContainer/DigitsContainer" instance=ExtResource("3_3cfgd")]
+layout_mode = 2
+
+[node name="Digit8" parent="VBoxContainer/DigitsContainer" instance=ExtResource("3_3cfgd")]
+layout_mode = 2
+
+[node name="Digit9" parent="VBoxContainer/DigitsContainer" instance=ExtResource("3_3cfgd")]
+layout_mode = 2
+
+[node name="CenterContainer" type="CenterContainer" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/CenterContainer"]
+layout_mode = 2
+
+[node name="Control" type="Control" parent="VBoxContainer/CenterContainer/VBoxContainer"]
+custom_minimum_size = Vector2(336, 336)
+layout_mode = 2
+
+[node name="PaintArea" type="ColorRect" parent="VBoxContainer/CenterContainer/VBoxContainer/Control"]
+unique_name_in_owner = true
+texture_filter = 1
+clip_contents = true
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 0
+offset_right = 28.0
+offset_bottom = 28.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(12, 12)
+color = Color(0.2, 0.23137255, 0.20392157, 1)
+script = ExtResource("2_5q4o7")
+pen_color = Color(1, 1, 1, 1)
+pen_size = 2.0
+
+[node name="ClearButton" type="Button" parent="VBoxContainer/CenterContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "clear"
