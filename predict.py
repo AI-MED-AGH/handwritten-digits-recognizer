@@ -6,25 +6,19 @@ start_time = time.time()
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
-from tensorflow.keras.layers import Dense, Flatten, Input
-from tensorflow.keras.models import Sequential
+import torch
 
 import traceback
 import os
+from Model import MyModel
 
-model = Sequential([
-    Input(shape=(28, 28, 1)),  # This defines the input shape correctly
-    Flatten(),
-    Dense(128, activation='relu'),
-    Dense(64, activation='relu'),
-    Dense(10, activation='softmax')
-])
-# model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+PATH = "model.pth"
 
 
-model.load_weights('model.weights.h5')
+model = MyModel()
 
-mid_time = time.time()
+model.load_state_dict(torch.load(PATH, weights_only=True))
+
 
 INPUT_PIPE_NAME = "model_input.pipe"
 OUTPUT_PIPE_NAME = "model_output.pipe"
@@ -55,16 +49,18 @@ while True:
             # Wrong size or something...
             traceback.print_exc()
             continue
+        
+        with torch.no_grad():
+            print(f"Received: {X.shape} {X}")
+            model.eval()
+            predictions: np.ndarray = model(X)
+            predicted_labels = np.argmax(predictions, axis=1)
 
-        print(f"Received: {X.shape} {X}")
-        predictions: np.ndarray = model.predict(X)
-        predicted_labels = np.argmax(predictions, axis=1)
+            pred_end_time = time.time()
+            print(f"Prediction duration: {pred_end_time - pred_start_time}")
 
-        pred_end_time = time.time()
-        print(f"Prediction duration: {pred_end_time - pred_start_time}")
-
-        predictions: list[str] = (predictions * 255).flatten().astype(int).astype(str).tolist()
-        predictions = ",".join(predictions)
+            predictions: list[str] = (predictions * 255).flatten().astype(int).astype(str).tolist()
+            predictions = ",".join(predictions)
 
         with open(OUTPUT_PIPE_NAME, "w") as output_file:
             output_file.write(predictions)
