@@ -62,11 +62,14 @@ while True:
             x_tensor = torch.unsqueeze(tranform(X),0)
 
             print(f"{x_tensor=}")
+            output=model(x_tensor)
 
             model.eval()
-            predictions: np.ndarray = np.exp(model(x_tensor).numpy())
+            predictions: np.ndarray = np.exp(output.numpy())
             
         predicted_labels = np.argmax(predictions, axis=1)
+
+        print(output)
         print(predictions)
 
         pred_end_time = time.time()
