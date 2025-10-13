@@ -1,30 +1,24 @@
 import time
 
-start_time = time.time()
-
+import torchvision
 
 import matplotlib.pyplot as plt
-import pandas as pd
 import numpy as np
-from tensorflow.keras.layers import Dense, Flatten, Input
-from tensorflow.keras.models import Sequential
+import torch
 
 import traceback
 import os
+from Model import MyModel
 
-model = Sequential([
-    Input(shape=(28, 28, 1)),  # This defines the input shape correctly
-    Flatten(),
-    Dense(128, activation='relu'),
-    Dense(64, activation='relu'),
-    Dense(10, activation='softmax')
-])
-# model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+PATH = "trained_models/model.pth"
 
 
-model.load_weights('model.weights.h5')
+tranform = torchvision.transforms.Compose([torchvision.transforms.ToTensor()])
 
-mid_time = time.time()
+model = MyModel()
+
+model.load_state_dict(torch.load(PATH, weights_only=True))
+
 
 INPUT_PIPE_NAME = "model_input.pipe"
 OUTPUT_PIPE_NAME = "model_output.pipe"
@@ -36,7 +30,9 @@ if not os.path.exists(OUTPUT_PIPE_NAME):
     os.mkfifo(OUTPUT_PIPE_NAME)
 
 
-print("Model loaded, listening...")
+print("==================================")
+print("   Model loaded, listening...")
+print("=================================\n")
 
 
 while True:
@@ -46,19 +42,31 @@ while True:
         input_data = input_file.read().rstrip('\n')
         input_data = input_data.split(',')
 
-        print("Strings array: ", input_data)
+        # print("Strings array: ", input_data)
 
         try:
-            X = np.array(input_data, dtype=float) / 255.0
-            X = X.reshape(-1, 28, 28, 1)
+            X = np.array(input_data, dtype=np.float32) / 255.0
+            X = X.reshape((28,28))
         except ValueError:
             # Wrong size or something...
             traceback.print_exc()
             continue
+        
+        # print(f"Received: {X.shape} {X}")
 
-        print(f"Received: {X.shape} {X}")
-        predictions: np.ndarray = model.predict(X)
+        with torch.no_grad():
+            x_tensor = torch.unsqueeze(tranform(X),0)
+
+            #print(f"{x_tensor=}")
+            output=model(x_tensor)
+
+            model.eval()
+            predictions: np.ndarray = np.exp(output.numpy())
+            
         predicted_labels = np.argmax(predictions, axis=1)
+
+        #print(output)
+        print(predictions)
 
         pred_end_time = time.time()
         print(f"Prediction duration: {pred_end_time - pred_start_time}")
@@ -74,9 +82,3 @@ while True:
             plt.title(f"Predicted: {predicted_labels}")
             plt.axis('off')
             plt.savefig("debug_inputs/last.png")
-
-
-end_time = time.time()
-
-print(f"Duration: {end_time - start_time} seconds")
-print(f"Model loading: {mid_time - start_time} seconds")

@@ -5,8 +5,6 @@ const _SETTINGS_FILEPATH = "user://settings.json"
 @export_group("Settings")
 var first_time_loaded: bool = true
 var model_folder_path: String
-var model_output_file_name = "model_output.pipe"
-var echo_to_input_program_name = "echo_to_input.py"
 
 
 func _init() -> void:
@@ -30,8 +28,6 @@ func save_settings() -> void:
 	var json = {}
 	json.first_time_loaded = first_time_loaded
 	json.model_folder_path = model_folder_path
-	json.model_output_file_name = model_output_file_name
-	json.echo_to_input_program_name = echo_to_input_program_name
 	
 	var json_text = JSON.stringify(json)
 	
