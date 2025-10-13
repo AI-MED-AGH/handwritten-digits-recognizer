@@ -11,7 +11,7 @@ import torchvision
 
 
 
-tranform = torchvision.transforms.Compose([torchvision.transforms.ToTensor(),torchvision.transforms.Normalize((0.1307,), (0.3081,))])
+tranform = torchvision.transforms.Compose([torchvision.transforms.ToTensor()])
 
 
 import traceback
@@ -61,11 +61,13 @@ while True:
         with torch.no_grad():
             x_tensor = torch.unsqueeze(tranform(X),0)
 
+            print(f"{x_tensor=}")
+
             model.eval()
             predictions: np.ndarray = np.exp(model(x_tensor).numpy())
             
         predicted_labels = np.argmax(predictions, axis=1)
-        print(predicted_labels)
+        print(predictions)
 
         pred_end_time = time.time()
         print(f"Prediction duration: {pred_end_time - pred_start_time}")
