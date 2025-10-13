@@ -82,13 +82,8 @@ grow_horizontal = 2
 grow_vertical = 2
 scale = Vector2(12, 12)
 script = ExtResource("2_5q4o7")
-<<<<<<< HEAD
 pen_color = Color(1, 1, 1, 1)
-pen_radius = 1.2000000000000002
-=======
-pen_color = Color(1, 1, 1, 0.6313726)
 pen_radius = 1.5
->>>>>>> d0cbc8fcc8ea83271dd6a287b318a9817dd4d611
 
 [node name="ClearButton" type="Button" parent="VBoxContainer/CenterContainer/VBoxContainer"]
 unique_name_in_owner = true
