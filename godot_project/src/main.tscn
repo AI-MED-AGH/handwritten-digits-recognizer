@@ -76,14 +76,14 @@ texture_filter = 1
 clip_contents = true
 custom_minimum_size = Vector2(28, 28)
 layout_mode = 0
+offset_top = -32.0
 offset_right = 28.0
-offset_bottom = 28.0
-grow_horizontal = 2
-grow_vertical = 2
+offset_bottom = -4.0
 scale = Vector2(12, 12)
 script = ExtResource("2_5q4o7")
 pen_color = Color(1, 1, 1, 1)
 pen_radius = 1.5
+margin_at_each_side = 3
 
 [node name="ClearButton" type="Button" parent="VBoxContainer/CenterContainer/VBoxContainer"]
 unique_name_in_owner = true

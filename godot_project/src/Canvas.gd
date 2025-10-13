@@ -4,7 +4,7 @@ signal redrawed(Image)
 
 @export var pen_color = Color(1, 1, 0)
 @export_range(0.1, 50) var pen_radius: float = 5
-@export_range(1, 10) var pen_delay: float = 1
+@export var margin_at_each_side: int = 0
 
 @onready var viewport = SubViewport.new()
 @onready var board = TextureRect.new()
@@ -19,8 +19,13 @@ var _is_dragging: bool = false
 
 
 func _ready():
-	image = Image.create_empty(28, 28, false, Image.Format.FORMAT_L8)
+	var img_size = Vector2i(28 - margin_at_each_side*2, 28 - margin_at_each_side*2)
+	image = Image.create_empty(img_size.x, img_size.y, false, Image.Format.FORMAT_L8)
 	_update_texture_image()
+
+	custom_minimum_size = img_size
+	size = img_size
+	get_parent().custom_minimum_size = custom_minimum_size * scale
 
 	redrawed_timer.wait_time = 0.2
 	redrawed_timer.one_shot = false
@@ -84,7 +89,6 @@ func _gui_input(event: InputEvent) -> void:
 			_emit_redrawed_signal_for_frame()
 	
 	if event is InputEventScreenDrag or (event is InputEventMouseMotion and _is_dragging):
-		#if event.relative.length() > pen_delay:
 		_draw_at_mouse()
 
 
@@ -100,4 +104,10 @@ func _draw_at_mouse() -> void:
 
 
 func _emit_redrawed_signal_for_frame() -> void:
-	redrawed.emit(image)
+	var img_with_margins = Image.create_empty(28, 28, false, Image.Format.FORMAT_L8)
+	
+	for y in range(margin_at_each_side, 28-margin_at_each_side):
+		for x in range(margin_at_each_side, 28-margin_at_each_side):
+			img_with_margins.set_pixel(x, y, image.get_pixel(x-margin_at_each_side, y-margin_at_each_side))
+			
+	redrawed.emit(img_with_margins)
