@@ -16,4 +16,5 @@ func apply_preds(preds: PackedInt32Array) -> void:
 		var pred = preds[i] / 255.0
 		c.color = Color(pred, pred, pred, 255)
 
-	get_child(best_idx).color = chosen_color
+	if best_score > 0:
+		get_child(best_idx).color = chosen_color

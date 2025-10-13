@@ -1,7 +1,5 @@
 extends Control
 
-#var input_path = "/home/dom/Programming/python/handwritten_digits/model_input.pipe"
-var input_path = "/home/dom/Programming/python/handwritten_digits/test.txt"
 var output_path = "/home/dom/Programming/python/handwritten_digits/model_output.pipe"
 var echo_to_input_program = "/home/dom/Programming/python/handwritten_digits/echo_to_input.py"
 
@@ -69,8 +67,13 @@ func _await_model_prediction() -> PackedInt32Array:
 	
 	var text = stdout.get_as_text()
 	
-	while text == "":
-		await get_tree().create_timer(0.05).timeout
+	const MAX_WAIT = 0.5
+	const DELAY: float = 0.05
+	var elapsed_time: float = 0.0
+	
+	while text == "" and elapsed_time < MAX_WAIT:
+		await get_tree().create_timer(DELAY).timeout
+		elapsed_time += DELAY
 		text = stdout.get_as_text()
 	
 	print("TExt: '%s'" % text)
