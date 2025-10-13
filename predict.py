@@ -65,7 +65,6 @@ while True:
             
         predicted_labels = np.argmax(predictions, axis=0)
 
-
         
         
 
@@ -79,7 +78,7 @@ while True:
         print(f"\n\n{model_predictions=}")
 
         pred_end_time = time.time()
-        print(f"\nPrediction duration: {pred_end_time - pred_start_time}")
+        print(f"\nPrediction duration: {pred_end_time - pred_start_time} seconds")
 
         predictions: list[str] = (predictions * 255).flatten().astype(int).astype(str).tolist()
         predictions = ",".join(predictions)
