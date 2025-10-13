@@ -49,8 +49,8 @@ while True:
         print("Strings array: ", input_data)
 
         try:
-            X = np.array(input_data, dtype=np.float32) / 255.0
-            X = X.reshape([28,28])
+            X = np.array(input_data, dtype=np.float32)
+            X = X.reshape((28,28))
         except ValueError:
             # Wrong size or something...
             traceback.print_exc()
@@ -59,18 +59,19 @@ while True:
 
         print(f"Received: {X.shape} {X}")
         with torch.no_grad():
-            x_tensor = tranform(X)
-            print(x_tensor)
+            x_tensor = torch.unsqueeze(tranform(X),0)
+
             model.eval()
             predictions: np.ndarray = np.exp(model(x_tensor).numpy())
-            predicted_labels = np.argmax(predictions, axis=1)
-            print(predicted_labels)
+            
+        predicted_labels = np.argmax(predictions, axis=1)
+        print(predicted_labels)
 
-            pred_end_time = time.time()
-            print(f"Prediction duration: {pred_end_time - pred_start_time}")
+        pred_end_time = time.time()
+        print(f"Prediction duration: {pred_end_time - pred_start_time}")
 
-            predictions: list[str] = (predictions * 255).flatten().astype(int).astype(str).tolist()
-            predictions = ",".join(predictions)
+        predictions: list[str] = (predictions * 255).flatten().astype(int).astype(str).tolist()
+        predictions = ",".join(predictions)
 
         with open(OUTPUT_PIPE_NAME, "w") as output_file:
             output_file.write(predictions)
