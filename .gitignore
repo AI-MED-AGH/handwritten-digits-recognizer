@@ -2,4 +2,5 @@
 venv
 __pycache__/
 *.pipe
+test.py
 debug_inputs/
