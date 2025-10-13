@@ -27,7 +27,7 @@ if not os.path.exists(INPUT_PIPE_NAME):
     os.mkfifo(INPUT_PIPE_NAME)
 
 if not os.path.exists(OUTPUT_PIPE_NAME):
-    os.mkfifo(INPUT_PIPE_NAME)
+    os.mkfifo(OUTPUT_PIPE_NAME)
 
 
 print("Model loaded, listening...")
@@ -66,10 +66,10 @@ while True:
             output_file.write(predictions)
             output_file.flush()
 
-            # plt.imshow(X.reshape(28, 28), cmap='gray')
-            # plt.title(f"Predicted: {predicted_labels}")
-            # plt.axis('off')
-            # plt.show()
+            plt.imshow(X.reshape(28, 28), cmap='gray')
+            plt.title(f"Predicted: {predicted_labels}")
+            plt.axis('off')
+            plt.savefig("debug_inputs/last.png")
 
 
 end_time = time.time()

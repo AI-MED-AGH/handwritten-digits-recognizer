@@ -8,7 +8,8 @@ signal redrawed(Image)
 
 @onready var viewport = SubViewport.new()
 @onready var board = TextureRect.new()
-@onready var pen = Line2D.new()
+@onready var pen: Line2D
+@onready var pen2: Line2D
 @onready var redrawed_timer = Timer.new()
 
 var mouse_pos = Vector2()
@@ -19,20 +20,15 @@ var _is_dragging: bool = false
 
 func _ready():
 	viewport.set_size(size)
-	viewport.set_clear_mode(SubViewport.ClearMode.CLEAR_MODE_ONCE)
+	viewport.set_clear_mode(SubViewport.ClearMode.CLEAR_MODE_ALWAYS)
 	viewport.set_transparent_background(true)
 
-	pen.set_joint_mode(Line2D.LINE_JOINT_ROUND)
-	pen.set_begin_cap_mode(Line2D.LINE_CAP_ROUND)
-	pen.set_end_cap_mode(Line2D.LINE_CAP_ROUND)
-	pen.set_default_color(pen_color)
-	pen.set_antialiased(true)
-	pen.set_width(pen_size)
+	_new_pen()
 	
 	# Use a sprite to display the result texture
 	board.set_texture(viewport.get_texture())
 
-	redrawed_timer.wait_time = 0.2
+	redrawed_timer.wait_time = 0.1
 	redrawed_timer.one_shot = true
 	redrawed_timer.autostart = false
 	redrawed_timer.timeout.connect(_emit_redrawed_signal_for_frame)
@@ -40,11 +36,35 @@ func _ready():
 	add_child(viewport)
 	add_child(board)
 	add_child(redrawed_timer)
+
+
+func _new_pen() -> void:
+	pen = Line2D.new()
+	pen.set_joint_mode(Line2D.LINE_JOINT_ROUND)
+	pen.set_begin_cap_mode(Line2D.LINE_CAP_ROUND)
+	pen.set_end_cap_mode(Line2D.LINE_CAP_ROUND)
+	pen.set_default_color(pen_color)
+	pen.set_antialiased(true)
+	pen.set_width(pen_size)
+	
+	pen2 = pen.duplicate()
+	var sub_pen_color = pen_color
+	sub_pen_color.a = 1
+	pen2.set_default_color(sub_pen_color)
+	pen2.set_width(pen_size * 0.5)
+	
 	viewport.add_child(pen)
+	viewport.add_child(pen2)
+
 
 func clear_viewport() -> void:
-	viewport.set_clear_mode(SubViewport.ClearMode.CLEAR_MODE_ONCE)
+	for c in viewport.get_children():
+		c.queue_free()
+	
+	#viewport.set_clear_mode(SubViewport.ClearMode.CLEAR_MODE_ONCE)
 	_emit_redrawed_signal_for_frame()
+	
+	_new_pen()
 
 
 func _gui_input(event: InputEvent) -> void:
@@ -54,8 +74,10 @@ func _gui_input(event: InputEvent) -> void:
 			_draw_at_mouse()
 			_draw_at_mouse()
 		else:
-			pen.clear_points()
+			_new_pen()
 			_is_dragging = false
+			
+			redrawed_timer.start()
 	
 	if event is InputEventScreenDrag or (event is InputEventMouseMotion and _is_dragging):
 		#if event.relative.length() > pen_delay:
@@ -65,6 +87,7 @@ func _gui_input(event: InputEvent) -> void:
 func _draw_at_mouse() -> void:
 	mouse_pos = get_local_mouse_position()
 	pen.add_point(mouse_pos)
+	pen2.add_point(mouse_pos)
 	
 	if redrawed_timer.is_stopped():
 		redrawed_timer.start()
