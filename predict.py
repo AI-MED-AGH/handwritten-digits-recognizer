@@ -57,7 +57,7 @@ while True:
         with torch.no_grad():
             x_tensor = torch.unsqueeze(tranform(X),0)
 
-            # print(f"{x_tensor=}")
+            #print(f"{x_tensor=}")
             output=model(x_tensor)
 
             model.eval()
@@ -65,7 +65,7 @@ while True:
             
         predicted_labels = np.argmax(predictions, axis=1)
 
-        # print(output)
+        #print(output)
         print(predictions)
 
         pred_end_time = time.time()
