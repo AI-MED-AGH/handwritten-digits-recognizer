@@ -55,15 +55,16 @@ while True:
             # Wrong size or something...
             traceback.print_exc()
             continue
-            
+        
 
         print(f"Received: {X.shape} {X}")
         with torch.no_grad():
             x_tensor = tranform(X)
             print(x_tensor)
             model.eval()
-            predictions: np.ndarray = model(x_tensor).numpy()
+            predictions: np.ndarray = np.exp(model(x_tensor).numpy())
             predicted_labels = np.argmax(predictions, axis=1)
+            print(predicted_labels)
 
             pred_end_time = time.time()
             print(f"Prediction duration: {pred_end_time - pred_start_time}")
