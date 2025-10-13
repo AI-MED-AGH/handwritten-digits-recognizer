@@ -18,7 +18,7 @@ import traceback
 import os
 from Model import MyModel
 
-PATH = "model.pth"
+PATH = "trained_models/model.pth"
 
 
 model = MyModel()
