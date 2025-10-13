@@ -28,7 +28,7 @@ func _ready():
 	# Use a sprite to display the result texture
 	board.set_texture(viewport.get_texture())
 
-	redrawed_timer.wait_time = 0.2
+	redrawed_timer.wait_time = 0.1
 	redrawed_timer.one_shot = true
 	redrawed_timer.autostart = false
 	redrawed_timer.timeout.connect(_emit_redrawed_signal_for_frame)
@@ -76,6 +76,8 @@ func _gui_input(event: InputEvent) -> void:
 		else:
 			_new_pen()
 			_is_dragging = false
+			
+			redrawed_timer.start()
 	
 	if event is InputEventScreenDrag or (event is InputEventMouseMotion and _is_dragging):
 		#if event.relative.length() > pen_delay:
