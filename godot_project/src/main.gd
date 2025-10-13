@@ -74,7 +74,7 @@ func _await_model_prediction():
 	var output_path = Settings.model_folder_path.path_join(MODEL_OUTPUT_FILE)
 
 	var output = OS.execute_with_pipe("cat", [output_path])
-	print(output)
+	#print(output)
 	
 	if output.is_empty():
 		print("Error creating subprocess")
@@ -96,7 +96,7 @@ func _await_model_prediction():
 		elapsed_time += DELAY
 		text = stdout.get_as_text()
 	
-	print("TExt: '%s'" % text)
+	#print("TExt: '%s'" % text)
 	
 	var output_text = text.split(",")
 	var predictions = PackedInt32Array()
@@ -105,7 +105,7 @@ func _await_model_prediction():
 	for i in range(output_text.size()):
 		predictions[i] = output_text[i].to_int()
 	
-	print("Preds: ", predictions)
+	#print("Preds: ", predictions)
 	
 	digits_container.apply_preds(predictions)
 

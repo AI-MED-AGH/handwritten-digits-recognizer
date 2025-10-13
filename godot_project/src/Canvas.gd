@@ -22,9 +22,10 @@ func _ready():
 	image = Image.create_empty(28, 28, false, Image.Format.FORMAT_L8)
 	_update_texture_image()
 
-	redrawed_timer.wait_time = 0.1
-	redrawed_timer.one_shot = true
-	redrawed_timer.autostart = false
+	redrawed_timer.wait_time = 0.2
+	redrawed_timer.one_shot = false
+	redrawed_timer.autostart = true
+	redrawed_timer.start()
 	redrawed_timer.timeout.connect(_emit_redrawed_signal_for_frame)
 
 	add_child(viewport)
@@ -81,7 +82,7 @@ func _gui_input(event: InputEvent) -> void:
 		else:
 			_is_dragging = false
 			
-			redrawed_timer.start()
+			#redrawed_timer.start()
 	
 	if event is InputEventScreenDrag or (event is InputEventMouseMotion and _is_dragging):
 		#if event.relative.length() > pen_delay:
@@ -96,8 +97,8 @@ func _draw_at_mouse() -> void:
 	
 	last_draw_pos = mouse_pos
 	
-	if redrawed_timer.is_stopped():
-		redrawed_timer.start()
+	#if redrawed_timer.is_stopped():
+		#redrawed_timer.start()
 
 
 func _emit_redrawed_signal_for_frame() -> void:
