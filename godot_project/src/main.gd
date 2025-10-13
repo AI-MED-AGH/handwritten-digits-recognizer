@@ -105,6 +105,14 @@ func _await_model_prediction():
 	digits_container.apply_preds(predictions)
 
 
+func _input(event: InputEvent) -> void:
+	if event is not InputEventKey:
+		return
+	
+	if event is InputEventWithModifiers and event.is_pressed() and event.keycode == KEY_O and event.ctrl_pressed:
+		$FileDialog.popup()
+
+
 func _on_folder_selected(folder_path: String) -> void:
 	Settings.model_folder_path = folder_path
 	Settings.first_time_loaded = false
