@@ -78,8 +78,8 @@ func _await_model_prediction():
 	
 	if output.is_empty():
 		print("Error creating subprocess")
-		return PackedInt32Array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
-		
+		return
+	
 	var stdout: FileAccess = output.stdio
 	
 	var text = stdout.get_as_text()
