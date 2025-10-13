@@ -49,7 +49,7 @@ while True:
         print("Strings array: ", input_data)
 
         try:
-            X = np.array(input_data, dtype=np.float32)
+            X = np.array(input_data, dtype=np.float32) / 255.0
             X = X.reshape((28,28))
         except ValueError:
             # Wrong size or something...
