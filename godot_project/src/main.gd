@@ -40,7 +40,7 @@ func _check_model_pred() -> void:
 	input_data.resize(28*28)
 	
 	var input_idx = 0
-	for i in range(0, _next_data_to_pred.size(), 4):
+	for i in range(_next_data_to_pred.size()):
 		input_data[input_idx] = str(_next_data_to_pred[i])
 		input_idx += 1
 	

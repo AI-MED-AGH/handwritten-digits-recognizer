@@ -1,9 +1,9 @@
-extends ColorRect
+extends TextureRect
 
 signal redrawed(Image)
 
 @export var pen_color = Color(1, 1, 0)
-@export_range(1, 50) var pen_size: float = 5
+@export_range(0.1, 50) var pen_radius: float = 5
 @export_range(1, 10) var pen_delay: float = 1
 
 @onready var viewport = SubViewport.new()
@@ -12,21 +12,15 @@ signal redrawed(Image)
 @onready var pen2: Line2D
 @onready var redrawed_timer = Timer.new()
 
-var mouse_pos = Vector2()
-var tex : Image
+var last_draw_pos = Vector2()
+var image : Image
 
 var _is_dragging: bool = false
 
 
 func _ready():
-	viewport.set_size(size)
-	viewport.set_clear_mode(SubViewport.ClearMode.CLEAR_MODE_ALWAYS)
-	viewport.set_transparent_background(true)
-
-	_new_pen()
-	
-	# Use a sprite to display the result texture
-	board.set_texture(viewport.get_texture())
+	image = Image.create_empty(28, 28, false, Image.Format.FORMAT_L8)
+	_update_texture_image()
 
 	redrawed_timer.wait_time = 0.1
 	redrawed_timer.one_shot = true
@@ -38,43 +32,53 @@ func _ready():
 	add_child(redrawed_timer)
 
 
-func _new_pen() -> void:
-	pen = Line2D.new()
-	pen.set_joint_mode(Line2D.LINE_JOINT_ROUND)
-	pen.set_begin_cap_mode(Line2D.LINE_CAP_ROUND)
-	pen.set_end_cap_mode(Line2D.LINE_CAP_ROUND)
-	pen.set_default_color(pen_color)
-	pen.set_antialiased(true)
-	pen.set_width(pen_size)
+func _update_texture_image() -> void:
+	texture = ImageTexture.create_from_image(image)
+
+
+func paint_dot_brush(pos: Vector2) -> void:
+	for dx in range(-pen_radius, pen_radius + 1):
+		for dy in range(-pen_radius, pen_radius + 1):
+			var px = pos.x + dx
+			var py = pos.y + dy
+			if px < 0 or py < 0 or px >= image.get_width() or py >= image.get_height():
+				continue
+			var dist = sqrt(dx * dx + dy * dy)
+			if dist > pen_radius:
+				continue
+			var alpha = clamp(1.0 - dist / pen_radius, 0, 1)
+			var existing_color = image.get_pixel(px, py)
+			var new_color = existing_color.lerp(pen_color, alpha * pen_color.a)
+			image.set_pixel(int(px), int(py), new_color)
 	
-	pen2 = pen.duplicate()
-	var sub_pen_color = pen_color
-	sub_pen_color.a = 1
-	pen2.set_default_color(sub_pen_color)
-	pen2.set_width(pen_size * 0.5)
-	
-	viewport.add_child(pen)
-	viewport.add_child(pen2)
+	_update_texture_image()
+
+# New function to draw a line by painting dots along it
+func paint_line_brush(pos1: Vector2, pos2: Vector2) -> void:
+	var dist = Vector2(pos2.x - pos1.x, pos2.y - pos1.y).length()
+	var steps = int(dist)
+	if steps == 0:
+		paint_dot_brush(pos1)
+		return
+	for i in range(steps + 1):
+		var t = float(i) / steps
+		var interp_pos = lerp(pos1, pos2, t)
+		paint_dot_brush(interp_pos)
 
 
 func clear_viewport() -> void:
-	for c in viewport.get_children():
-		c.queue_free()
-	
-	#viewport.set_clear_mode(SubViewport.ClearMode.CLEAR_MODE_ONCE)
+	image.fill(Color.BLACK)
+	_update_texture_image()
 	_emit_redrawed_signal_for_frame()
-	
-	_new_pen()
 
 
 func _gui_input(event: InputEvent) -> void:
 	if event is InputEventScreenTouch or event is InputEventMouseButton:
 		if event.pressed:
 			_is_dragging = true
-			_draw_at_mouse()
+			last_draw_pos = get_local_mouse_position()
 			_draw_at_mouse()
 		else:
-			_new_pen()
 			_is_dragging = false
 			
 			redrawed_timer.start()
@@ -85,16 +89,16 @@ func _gui_input(event: InputEvent) -> void:
 
 
 func _draw_at_mouse() -> void:
-	mouse_pos = get_local_mouse_position()
-	pen.add_point(mouse_pos)
-	pen2.add_point(mouse_pos)
+	var mouse_pos = get_local_mouse_position()
+	
+	paint_line_brush(last_draw_pos, mouse_pos)
+	#paint_dot_brush(mouse_pos)
+	
+	last_draw_pos = mouse_pos
 	
 	if redrawed_timer.is_stopped():
 		redrawed_timer.start()
 
 
 func _emit_redrawed_signal_for_frame() -> void:
-	await RenderingServer.frame_post_draw
-	var texture = viewport.get_texture()
-	var image = texture.get_image()
 	redrawed.emit(image)
