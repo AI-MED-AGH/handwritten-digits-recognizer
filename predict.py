@@ -70,10 +70,10 @@ while True:
             output_file.write(predictions)
             output_file.flush()
 
-            # plt.imshow(X.reshape(28, 28), cmap='gray')
-            # plt.title(f"Predicted: {predicted_labels}")
-            # plt.axis('off')
-            # plt.show()
+            plt.imshow(X.reshape(28, 28), cmap='gray')
+            plt.title(f"Predicted: {predicted_labels}")
+            plt.axis('off')
+            plt.savefig("debug_inputs/last.png")
 
 
 end_time = time.time()
