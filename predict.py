@@ -33,7 +33,7 @@ if not os.path.exists(INPUT_PIPE_NAME):
     os.mkfifo(INPUT_PIPE_NAME)
 
 if not os.path.exists(OUTPUT_PIPE_NAME):
-    os.mkfifo(INPUT_PIPE_NAME)
+    os.mkfifo(OUTPUT_PIPE_NAME)
 
 
 print("Model loaded, listening...")

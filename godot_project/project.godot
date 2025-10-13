@@ -14,3 +14,7 @@ config/name="handwritten_digits"
 run/main_scene="uid://q6c8bkmou1yy"
 config/features=PackedStringArray("4.5")
 config/icon="res://icon.svg"
+
+[autoload]
+
+Settings="*res://src/Settings.gd"
