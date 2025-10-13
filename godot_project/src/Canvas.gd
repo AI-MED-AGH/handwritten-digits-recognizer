@@ -25,7 +25,6 @@ func _ready():
 	redrawed_timer.wait_time = 0.2
 	redrawed_timer.one_shot = false
 	redrawed_timer.autostart = true
-	redrawed_timer.start()
 	redrawed_timer.timeout.connect(_emit_redrawed_signal_for_frame)
 
 	add_child(viewport)
@@ -51,8 +50,7 @@ func paint_dot_brush(pos: Vector2) -> void:
 			var existing_color = image.get_pixel(px, py)
 			var new_color = existing_color.lerp(pen_color, alpha * pen_color.a)
 			image.set_pixel(int(px), int(py), new_color)
-	
-	_update_texture_image()
+
 
 # New function to draw a line by painting dots along it
 func paint_line_brush(pos1: Vector2, pos2: Vector2) -> void:
@@ -60,12 +58,14 @@ func paint_line_brush(pos1: Vector2, pos2: Vector2) -> void:
 	var steps = int(dist)
 	if steps == 0:
 		paint_dot_brush(pos1)
+		_update_texture_image()
 		return
 	for i in range(steps + 1):
 		var t = float(i) / steps
 		var interp_pos = lerp(pos1, pos2, t)
 		paint_dot_brush(interp_pos)
 
+	_update_texture_image()
 
 func clear_viewport() -> void:
 	image.fill(Color.BLACK)
@@ -81,8 +81,7 @@ func _gui_input(event: InputEvent) -> void:
 			_draw_at_mouse()
 		else:
 			_is_dragging = false
-			
-			#redrawed_timer.start()
+			_emit_redrawed_signal_for_frame()
 	
 	if event is InputEventScreenDrag or (event is InputEventMouseMotion and _is_dragging):
 		#if event.relative.length() > pen_delay:
@@ -93,7 +92,6 @@ func _draw_at_mouse() -> void:
 	var mouse_pos = get_local_mouse_position()
 	
 	paint_line_brush(last_draw_pos, mouse_pos)
-	#paint_dot_brush(mouse_pos)
 	
 	last_draw_pos = mouse_pos
 	
