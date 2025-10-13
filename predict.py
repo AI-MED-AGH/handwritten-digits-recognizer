@@ -61,15 +61,25 @@ while True:
             output=model(x_tensor)
 
             model.eval()
-            predictions: np.ndarray = np.exp(output.numpy())
+            predictions: np.ndarray = np.squeeze(np.exp(output.numpy()))
             
-        predicted_labels = np.argmax(predictions, axis=1)
+        predicted_labels = np.argmax(predictions, axis=0)
+
+
+        
+        
+
+        model_predictions = {
+        str(i): round(predictions[i].item(), 3)
+        for i in range(10)
+        }
 
         #print(output)
-        print(predictions)
+        
+        print(f"\n\n{model_predictions=}")
 
         pred_end_time = time.time()
-        print(f"Prediction duration: {pred_end_time - pred_start_time}")
+        print(f"\nPrediction duration: {pred_end_time - pred_start_time}")
 
         predictions: list[str] = (predictions * 255).flatten().astype(int).astype(str).tolist()
         predictions = ",".join(predictions)
