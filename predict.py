@@ -7,6 +7,12 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 import torch
+import torchvision
+
+
+
+tranform = torchvision.transforms.Compose([torchvision.transforms.ToTensor(),torchvision.transforms.Normalize((0.1307,), (0.3081,))])
+
 
 import traceback
 import os
@@ -43,17 +49,20 @@ while True:
         print("Strings array: ", input_data)
 
         try:
-            X = np.array(input_data, dtype=float) / 255.0
-            X = X.reshape(-1, 28, 28, 1)
+            X = np.array(input_data, dtype=np.float32) / 255.0
+            X = X.reshape([28,28])
         except ValueError:
             # Wrong size or something...
             traceback.print_exc()
             continue
-        
+            
+
+        print(f"Received: {X.shape} {X}")
         with torch.no_grad():
-            print(f"Received: {X.shape} {X}")
+            x_tensor = tranform(X)
+            print(x_tensor)
             model.eval()
-            predictions: np.ndarray = model(X)
+            predictions: np.ndarray = model(x_tensor).numpy()
             predicted_labels = np.argmax(predictions, axis=1)
 
             pred_end_time = time.time()
