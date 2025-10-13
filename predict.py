@@ -1,18 +1,10 @@
 import time
 
-start_time = time.time()
-
-
-import matplotlib.pyplot as plt
-import pandas as pd
-import numpy as np
-import torch
 import torchvision
 
-
-
-tranform = torchvision.transforms.Compose([torchvision.transforms.ToTensor()])
-
+import matplotlib.pyplot as plt
+import numpy as np
+import torch
 
 import traceback
 import os
@@ -20,6 +12,8 @@ from Model import MyModel
 
 PATH = "trained_models/model.pth"
 
+
+tranform = torchvision.transforms.Compose([torchvision.transforms.ToTensor()])
 
 model = MyModel()
 
@@ -36,7 +30,9 @@ if not os.path.exists(OUTPUT_PIPE_NAME):
     os.mkfifo(OUTPUT_PIPE_NAME)
 
 
-print("Model loaded, listening...")
+print("==================================")
+print("   Model loaded, listening...")
+print("=================================\n")
 
 
 while True:
@@ -46,7 +42,7 @@ while True:
         input_data = input_file.read().rstrip('\n')
         input_data = input_data.split(',')
 
-        print("Strings array: ", input_data)
+        # print("Strings array: ", input_data)
 
         try:
             X = np.array(input_data, dtype=np.float32) / 255.0
@@ -56,8 +52,8 @@ while True:
             traceback.print_exc()
             continue
         
+        # print(f"Received: {X.shape} {X}")
 
-        print(f"Received: {X.shape} {X}")
         with torch.no_grad():
             x_tensor = torch.unsqueeze(tranform(X),0)
 
@@ -86,9 +82,3 @@ while True:
             plt.title(f"Predicted: {predicted_labels}")
             plt.axis('off')
             plt.savefig("debug_inputs/last.png")
-
-
-end_time = time.time()
-
-print(f"Duration: {end_time - start_time} seconds")
-print(f"Model loading: {mid_time - start_time} seconds")
