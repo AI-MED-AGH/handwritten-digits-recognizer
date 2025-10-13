@@ -1,5 +1,6 @@
 extends Control
 
+const MODEL_INPUT_FILE = "model_input.pipe"
 const MODEL_OUTPUT_FILE = "model_output.pipe"
 const ECHO_TO_INPUT_FILE = "echo_to_input.py"
 
@@ -57,10 +58,14 @@ func _push_model_input(model_input: PackedStringArray) -> void:
 	var model_input_str = ",".join(model_input)
 	
 	var echo_to_input_program = Settings.model_folder_path.path_join(ECHO_TO_INPUT_FILE)
+	var input_file_path = Settings.model_folder_path.path_join(MODEL_INPUT_FILE)
 	
 	var output = []
-	OS.execute("python3", [echo_to_input_program, model_input_str], output)
+	var result = OS.execute("python3", [echo_to_input_program, model_input_str, input_file_path], output)
 	
+	if result != 0:
+		print("error pushing to file: ", result)
+		print("output:\n", output)
 	#print("output:\n", output)
 	#print("\n\n\n===")
 
@@ -103,6 +108,14 @@ func _await_model_prediction():
 	print("Preds: ", predictions)
 	
 	digits_container.apply_preds(predictions)
+
+
+func _input(event: InputEvent) -> void:
+	if event is not InputEventKey:
+		return
+	
+	if event is InputEventWithModifiers and event.is_pressed() and event.keycode == KEY_O and event.ctrl_pressed:
+		$FileDialog.popup()
 
 
 func _on_folder_selected(folder_path: String) -> void:
