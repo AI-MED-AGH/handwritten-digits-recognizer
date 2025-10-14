@@ -11,7 +11,7 @@ import os
 from Model import MyModel
 
 PATH = "trained_models/model.pth"
-
+DEBUG = False
 
 tranform = torchvision.transforms.Compose([torchvision.transforms.ToTensor()])
 
@@ -67,18 +67,17 @@ while True:
 
         
         
-
-        model_predictions = {
-        str(i): round(predictions[i].item(), 3)
-        for i in range(10)
-        }
-
-        #print(output)
-        
-        print(f"\n\n{model_predictions=}")
+        if DEBUG:
+            model_predictions = {
+            str(i): round(predictions[i].item(), 3)
+            for i in range(10)
+            }
+            print(f"\n\n{model_predictions=}")
 
         pred_end_time = time.time()
-        print(f"\nPrediction duration: {pred_end_time - pred_start_time} seconds")
+        
+        if DEBUG:
+            print(f"\nPrediction duration: {pred_end_time - pred_start_time} seconds")
 
         predictions: list[str] = (predictions * 255).flatten().astype(int).astype(str).tolist()
         predictions = ",".join(predictions)
@@ -87,6 +86,7 @@ while True:
             output_file.write(predictions)
             output_file.flush()
 
+        if DEBUG:
             plt.imshow(X.reshape(28, 28), cmap='gray')
             plt.title(f"Predicted: {predicted_labels}")
             plt.axis('off')
