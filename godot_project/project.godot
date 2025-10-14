@@ -19,6 +19,10 @@ config/icon="res://icon.svg"
 
 Settings="*res://src/Settings.gd"
 
+[display]
+
+window/size/mode=3
+
 [input]
 
 open_file_dialog={

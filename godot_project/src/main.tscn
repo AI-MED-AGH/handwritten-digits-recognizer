@@ -82,7 +82,7 @@ scale = Vector2(12, 12)
 script = ExtResource("2_5q4o7")
 pen_color = Color(1, 1, 1, 1)
 pen_radius = 1.5
-margin_at_each_side = 3
+margin_at_each_side = 1
 
 [node name="ClearButton" type="Button" parent="VBoxContainer/CenterContainer/VBoxContainer"]
 unique_name_in_owner = true
