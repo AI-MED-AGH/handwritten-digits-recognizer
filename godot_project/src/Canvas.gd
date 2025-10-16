@@ -13,14 +13,14 @@ signal redrawed(Image)
 @onready var redrawed_timer = Timer.new()
 
 var last_draw_pos = Vector2()
-var image : Image
+var _image : Image
 
 var _is_dragging: bool = false
 
 
 func _ready():
 	var img_size = Vector2i(28 - margin_at_each_side*2, 28 - margin_at_each_side*2)
-	image = Image.create_empty(img_size.x, img_size.y, false, Image.Format.FORMAT_L8)
+	_image = Image.create_empty(img_size.x, img_size.y, false, Image.Format.FORMAT_L8)
 	_update_texture_image()
 
 	custom_minimum_size = img_size
@@ -37,8 +37,18 @@ func _ready():
 	add_child(redrawed_timer)
 
 
+func get_image() -> Image:
+	var img_with_margins = Image.create_empty(28, 28, false, Image.Format.FORMAT_L8)
+	
+	for y in range(margin_at_each_side, 28-margin_at_each_side):
+		for x in range(margin_at_each_side, 28-margin_at_each_side):
+			img_with_margins.set_pixel(x, y, _image.get_pixel(x-margin_at_each_side, y-margin_at_each_side))
+	
+	return img_with_margins
+
+
 func _update_texture_image() -> void:
-	texture = ImageTexture.create_from_image(image)
+	texture = ImageTexture.create_from_image(_image)
 
 
 func paint_dot_brush(pos: Vector2) -> void:
@@ -46,15 +56,15 @@ func paint_dot_brush(pos: Vector2) -> void:
 		for dy in range(-pen_radius, pen_radius + 1):
 			var px = pos.x + dx
 			var py = pos.y + dy
-			if px < 0 or py < 0 or px >= image.get_width() or py >= image.get_height():
+			if px < 0 or py < 0 or px >= _image.get_width() or py >= _image.get_height():
 				continue
 			var dist = sqrt(dx * dx + dy * dy)
 			if dist > pen_radius:
 				continue
 			var alpha = clamp(1.0 - dist / pen_radius, 0, 1)
-			var existing_color = image.get_pixel(px, py)
+			var existing_color = _image.get_pixel(px, py)
 			var new_color = existing_color.lerp(pen_color, alpha * pen_color.a)
-			image.set_pixel(int(px), int(py), new_color)
+			_image.set_pixel(int(px), int(py), new_color)
 
 
 # New function to draw a line by painting dots along it
@@ -73,7 +83,7 @@ func paint_line_brush(pos1: Vector2, pos2: Vector2) -> void:
 	_update_texture_image()
 
 func clear_viewport() -> void:
-	image.fill(Color.BLACK)
+	_image.fill(Color.BLACK)
 	_update_texture_image()
 	_emit_redrawed_signal_for_frame()
 
@@ -104,10 +114,5 @@ func _draw_at_mouse() -> void:
 
 
 func _emit_redrawed_signal_for_frame() -> void:
-	var img_with_margins = Image.create_empty(28, 28, false, Image.Format.FORMAT_L8)
-	
-	for y in range(margin_at_each_side, 28-margin_at_each_side):
-		for x in range(margin_at_each_side, 28-margin_at_each_side):
-			img_with_margins.set_pixel(x, y, image.get_pixel(x-margin_at_each_side, y-margin_at_each_side))
-			
+	var img_with_margins = get_image()
 	redrawed.emit(img_with_margins)
