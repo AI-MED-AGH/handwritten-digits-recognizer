@@ -9,14 +9,16 @@ var _waiting_for_pred: bool = false
 var _next_check_queued: bool = false
 
 @onready var digits_container = %DigitsContainer
-
+@onready var paint_area = %PaintArea
+@onready var fine_tune_saver = $FineTuneDataSaver
 
 func _ready() -> void:
-	var paint_area = %PaintArea
 	var clear_btn: Button = %ClearButton
 	clear_btn.pressed.connect(paint_area.clear_viewport)
 	
 	paint_area.redrawed.connect(_on_new_img_to_pred)
+	
+	digits_container.digit_clicked.connect(_on_digit_clicked)
 	
 	$FileDialog.dir_selected.connect(_on_folder_selected)
 	if Settings.first_time_loaded:
@@ -122,3 +124,25 @@ func _on_folder_selected(folder_path: String) -> void:
 	Settings.model_folder_path = folder_path
 	Settings.first_time_loaded = false
 	Settings.save_settings()
+
+
+func _image_to_str_array(image: Image) -> PackedStringArray:
+	var data = PackedStringArray()
+	data.resize(28*28)
+	
+	assert(image.get_format() == Image.Format.FORMAT_L8, "Image format should be right!")
+	
+	var image_data = image.get_data()
+	
+	for i in range(image_data.size()):
+		data[i] = str(image_data[i])
+	
+	_push_model_input(data)
+	
+	return data
+
+
+func _on_digit_clicked(digit: int) -> void:
+	var image = paint_area.get_image()
+	var data = _image_to_str_array(image)
+	fine_tune_saver.save_row(data, digit)

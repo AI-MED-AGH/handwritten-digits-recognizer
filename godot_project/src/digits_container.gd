@@ -1,6 +1,14 @@
 extends HBoxContainer
 
+signal digit_clicked(digit: int)
+
 @export var chosen_color: Color
+
+
+func _ready() -> void:
+	for idx in range(get_child_count()):
+		var digit = get_child(idx)
+		digit.clicked.connect(digit_clicked.emit.bind(idx))
 
 
 func apply_preds(preds: PackedInt32Array) -> void:

@@ -1,9 +1,10 @@
-[gd_scene load_steps=5 format=3 uid="uid://q6c8bkmou1yy"]
+[gd_scene load_steps=6 format=3 uid="uid://q6c8bkmou1yy"]
 
 [ext_resource type="Script" uid="uid://dg6ba52hreo2x" path="res://src/main.gd" id="1_gh0ne"]
 [ext_resource type="Script" uid="uid://dnm3mdly0l5mt" path="res://src/digits_container.gd" id="2_3cfgd"]
 [ext_resource type="Script" uid="uid://b5u8dtd800hil" path="res://src/Canvas.gd" id="2_5q4o7"]
 [ext_resource type="PackedScene" uid="uid://cumrabrub5omu" path="res://src/Digit/Digit.tscn" id="3_3cfgd"]
+[ext_resource type="Script" uid="uid://hq7up0mikfcg" path="res://src/fine_tune_data_saver.gd" id="5_fyndt"]
 
 [node name="main" type="Control"]
 layout_mode = 3
@@ -78,12 +79,11 @@ custom_minimum_size = Vector2(28, 28)
 layout_mode = 0
 offset_right = 28.0
 offset_bottom = 28.0
-grow_horizontal = 2
-grow_vertical = 2
 scale = Vector2(12, 12)
 script = ExtResource("2_5q4o7")
 pen_color = Color(1, 1, 1, 1)
 pen_radius = 1.5
+margin_at_each_side = 1
 
 [node name="ClearButton" type="Button" parent="VBoxContainer/CenterContainer/VBoxContainer"]
 unique_name_in_owner = true
@@ -95,3 +95,6 @@ text = "clear"
 title = "Open a Directory"
 file_mode = 2
 use_native_dialog = true
+
+[node name="FineTuneDataSaver" type="Node" parent="."]
+script = ExtResource("5_fyndt")
