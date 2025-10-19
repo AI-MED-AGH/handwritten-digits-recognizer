@@ -1,0 +1,5 @@
+torch~=2.9.0
+torchvision~=0.24.0
+matplotlib~=3.10.7
+numpy~=2.3.4
+pandas~=2.3.3
