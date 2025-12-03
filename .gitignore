@@ -5,5 +5,9 @@ __pycache__/
 test.py
 debug_inputs/
 MNIST/
+
+# Trained models
+*.pth
+
 fine_tune_data.csv
 
