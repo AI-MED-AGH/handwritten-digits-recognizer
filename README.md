@@ -7,6 +7,10 @@ the Godot engine that allows users to draw digits and see
 real-time predictions performed by the CNN model 
 running in the background.
 
+## Trained model
+
+Model weights (in .pth format) are excluded from this repository,
+and instead can be downloaded from [hugging face](https://huggingface.co/Artificial-Intelligence-in-Medicine-AGH/handwritten-digits-recognizer/tree/main)
 
 ## CNN Model Architecture
 
