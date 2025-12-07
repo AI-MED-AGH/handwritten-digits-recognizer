@@ -1,3 +1,4 @@
+import torchvision
 from fastmlapi import MLController, preprocessing, postprocessing
 import numpy as np
 
@@ -5,15 +6,17 @@ from Model import MyModel
 import os.path
 import torch
 
+tranform = torchvision.transforms.Compose([torchvision.transforms.ToTensor()])
+
 
 class ClassifierServer(MLController):
     model_name = "handwritten-digits-recognizer"
     model_version = "1.0.0"
 
     def load_model(self):
-        PARAMS_PATH = os.path.join("trained_models", "model.pth")
+        PATH = "trained_models/model.pth"
         model = MyModel()
-        model.load_state_dict(torch.load(PARAMS_PATH))
+        model.load_state_dict(torch.load(PATH, weights_only=True))
         return model
 
     @preprocessing
@@ -23,9 +26,22 @@ class ClassifierServer(MLController):
         return data
 
     @postprocessing
-    def postprocess(self, prediction: np.ndarray) -> list:
-        pred = prediction.data.max(1, keepdim=True)[1]
-        return pred.tolist()
+    def postprocess(self, predictions) -> list:
+        predictions: np.ndarray = np.squeeze(np.exp(predictions.detach().numpy()))
+        if len(predictions.shape) == 1:
+            predictions = predictions.reshape(1, -1)
+
+        predicted_labels = np.argmax(predictions, axis=1)
+
+        response = [
+            {
+                "label": predicted_labels[i].tolist(),
+                "proba": predictions[i].tolist()
+            }
+            for i in range(len(predicted_labels))
+        ]
+
+        return response
 
 if __name__ == "__main__":
     ClassifierServer().run()
