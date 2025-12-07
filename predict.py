@@ -1,5 +1,5 @@
 import torchvision
-from fastmlapi import MLController, postprocessing, prediction
+from fastmlapi import MLController, preprocessing, postprocessing, prediction
 import numpy as np
 
 from Model import MyModel
@@ -18,32 +18,31 @@ class ClassifierServer(MLController):
         model.load_state_dict(torch.load(PATH, weights_only=True))
         return model
 
-    @prediction
-    def preprocess_and_predict(self, data: torch.Tensor) -> torch.Tensor:
+    @preprocessing
+    def preprocess(self, data) -> torch.Tensor:
         X = np.array(data, dtype=np.float32) / 255.0
         X = X.reshape((-1, 1, 28, 28))
-
         X_tensor = torch.from_numpy(X)
+        return X_tensor
 
+    @prediction
+    def prediction(self, X: torch.Tensor) -> torch.Tensor:
         with torch.no_grad():
             self.model.eval()
-            output = self.model(X_tensor)
+            output = self.model(X)
             return output
 
     @postprocessing
-    def postprocess(self, predictions) -> list:
-        predictions: np.ndarray = np.squeeze(np.exp(predictions.numpy()))
-        if len(predictions.shape) == 1:
-            predictions = predictions.reshape(1, -1)
-
-        predicted_labels = np.argmax(predictions, axis=1)
+    def postprocess(self, probabilities) -> list:
+        probabilities: np.ndarray = np.exp(probabilities.numpy())
+        predicted_labels = np.argmax(probabilities, axis=1)
 
         response = [
             {
-                "label": predicted_labels[i].tolist(),
-                "proba": predictions[i].tolist()
+                "label": label.tolist(),
+                "proba": proba.tolist()
             }
-            for i in range(len(predicted_labels))
+            for label, proba in zip(predicted_labels, probabilities)
         ]
 
         return response
