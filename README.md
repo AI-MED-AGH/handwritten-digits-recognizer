@@ -10,7 +10,7 @@ running in the background.
 ## Trained model
 
 Model weights (in .pth format) are excluded from this repository,
-and instead can be downloaded from [hugging face](https://huggingface.co/Artificial-Intelligence-in-Medicine-AGH/handwritten-digits-recognizer/tree/main)
+and instead can be downloaded from [huggingface](https://huggingface.co/Artificial-Intelligence-in-Medicine-AGH/handwritten-digits-recognizer/tree/main), and placed in the `trained_models` folder.
 
 ## CNN Model Architecture
 
@@ -44,13 +44,6 @@ The Godot engine project in `godot_project/` provides a user interface for inter
 
 ## Setup and Installation
 
-> **Important:**  
-> Currently, this project is fully supported only on Linux systems 
-> due to its reliance on named pipe (FIFO) files for interprocess
-> communication. It may also work on macOS, though this has not
-> been tested. Windows support is not yet available,
-> but development is underway to extend compatibility to Windows OS.
-
 1. Clone the repository
 2. Create a virtual environment and install the dependencies:
     ```sh
@@ -60,14 +53,14 @@ The Godot engine project in `godot_project/` provides a user interface for inter
     ```
 3. Train the model (optional if you want to retrain):
    - Run `Model_training.ipynb` in Jupyter to train and save the model to `trained_models/model.pth`.
-
+   - OR download model from [huggingface](https://huggingface.co/Artificial-Intelligence-in-Medicine-AGH/handwritten-digits-recognizer/tree/main) to `trained_models` folder
 4. Run the prediction server:
    ```sh
    python predict.py
    ```
 
 5. Open the Godot project in Godot Engine 4.5 and edit project from `godot_project/` folder.
-   - The UI will interact with `predict.py` via the FIFO pipes for real-time digit recognition.
+   - The UI will interact with `predict.py` via http requests for real-time digit recognition.
 
 
 ## Example Digits Recognized
