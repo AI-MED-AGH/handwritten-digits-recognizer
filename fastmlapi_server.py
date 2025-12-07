@@ -1,12 +1,11 @@
 import torchvision
-from fastmlapi import MLController, preprocessing, postprocessing
+from fastmlapi import MLController, postprocessing, prediction
 import numpy as np
 
 from Model import MyModel
-import os.path
 import torch
 
-tranform = torchvision.transforms.Compose([torchvision.transforms.ToTensor()])
+transform = torchvision.transforms.Compose([torchvision.transforms.ToTensor()])
 
 
 class ClassifierServer(MLController):
@@ -19,15 +18,21 @@ class ClassifierServer(MLController):
         model.load_state_dict(torch.load(PATH, weights_only=True))
         return model
 
-    @preprocessing
-    def preprocess(self, data) -> torch.Tensor:
-        data = np.array(data).reshape((len(data), 1, 28, 28)) / 255.0
-        data = torch.Tensor(data)
-        return data
+    @prediction
+    def preprocess_and_predict(self, data: torch.Tensor) -> torch.Tensor:
+        X = np.array(data, dtype=np.float32) / 255.0
+        X = X.reshape((-1, 1, 28, 28))
+
+        X_tensor = torch.from_numpy(X)
+
+        with torch.no_grad():
+            self.model.eval()
+            output = self.model(X_tensor)
+            return output
 
     @postprocessing
     def postprocess(self, predictions) -> list:
-        predictions: np.ndarray = np.squeeze(np.exp(predictions.detach().numpy()))
+        predictions: np.ndarray = np.squeeze(np.exp(predictions.numpy()))
         if len(predictions.shape) == 1:
             predictions = predictions.reshape(1, -1)
 
