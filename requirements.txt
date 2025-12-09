@@ -3,4 +3,7 @@ torchvision~=0.24.0
 matplotlib~=3.10.7
 numpy~=2.3.4
 pandas~=2.3.3
+
+# we don't specify version of this package, because it's under constant development,
+# and we use the latest version here, to test the package in this project
 fastmlapi
