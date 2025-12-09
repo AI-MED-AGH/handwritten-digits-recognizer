@@ -12,18 +12,14 @@ transform = torchvision.transforms.Compose([torchvision.transforms.ToTensor()])
 class RequestModel(BaseModel):
     data: list[list[int]]
 
-    @classmethod
     @field_validator("data")
+    @classmethod
     def validate_data(cls, raw_data: list[list[int]]) -> np.ndarray:
-        data = np.array(raw_data)
-
-        print("validating data... ", data.shape)
-
-        assert data.dtype == np.int32, "data must be an integer"
+        data = np.array(raw_data, dtype=int)
         assert data.min() >= 0, "data must be between 0-255"
         assert data.max() <= 255, "data must be between 0-255"
         assert data.ndim == 2, "Expected list of cases, each case being 784 int array"
-        assert data.shape[2] == (28 * 28), "Images should be 28x28 px, provided as a flat array (784 long)"
+        assert data.shape[1] == (28 * 28), f"Images should be provided as a flat array of length 784, but length was {data.shape[1]}"
 
         return data
 
@@ -35,7 +31,6 @@ class ClassifierServer(MLController):
     request_model = RequestModel
 
     def load_model(self):
-        self.request_model = RequestModel
         PATH = "trained_models/model.pth"
         model = MyModel()
         model.load_state_dict(torch.load(PATH, weights_only=True))
