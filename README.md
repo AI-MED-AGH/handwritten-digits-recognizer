@@ -63,6 +63,18 @@ The Godot engine project in `godot_project/` provides a user interface for inter
    - The UI will interact with `predict.py` via http requests for real-time digit recognition.
 
 
+### Optionally: running in Docker
+
+To run in docker, first build a docker image:
+```shell
+docker build -t handwritten-img .
+```
+
+Then run docker container with port redirected:
+```shell
+docker run -d --name handwritten -p 8001:8000 handwritten-img
+```
+
 ## Example Digits Recognized
 
 ![img.png](readme_assets/example_recognitions.png)
