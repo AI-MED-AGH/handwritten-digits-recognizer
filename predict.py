@@ -1,6 +1,7 @@
 import torchvision
 from fastmlapi import MLController, preprocessing, postprocessing, prediction
 import numpy as np
+from pydantic import BaseModel, field_validator
 
 from Model import MyModel
 import torch
@@ -8,9 +9,26 @@ import torch
 transform = torchvision.transforms.Compose([torchvision.transforms.ToTensor()])
 
 
+class RequestModel(BaseModel):
+    data: list[list[int]]
+
+    @field_validator("data")
+    @classmethod
+    def validate_data(cls, raw_data: list[list[int]]) -> np.ndarray:
+        data = np.array(raw_data, dtype=int)
+        assert data.min() >= 0, "data must be between 0-255"
+        assert data.max() <= 255, "data must be between 0-255"
+        assert data.ndim == 2, "Expected list of cases, each case being 784 int array"
+        assert data.shape[1] == (28 * 28), f"Images should be provided as a flat array of length 784, but length was {data.shape[1]}"
+
+        return data
+
+
 class ClassifierServer(MLController):
     model_name = "handwritten-digits-recognizer"
     model_version = "1.0.0"
+
+    request_model = RequestModel
 
     def load_model(self) -> MyModel:
         PATH = "trained_models/model.pth"
@@ -46,6 +64,7 @@ class ClassifierServer(MLController):
         ]
 
         return response
+
 
 if __name__ == "__main__":
     ClassifierServer().run()
