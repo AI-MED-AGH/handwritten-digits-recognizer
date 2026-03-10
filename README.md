@@ -10,7 +10,7 @@ running in the background.
 ## Trained model
 
 Model weights (in .pth format) are excluded from this repository,
-and instead can be downloaded from [huggingface](https://huggingface.co/Artificial-Intelligence-in-Medicine-AGH/handwritten-digits-recognizer/tree/main), and placed in the `trained_models` folder.
+and instead can be downloaded from [huggingface](https://huggingface.co/AI-MED-AGH/handwritten-digits-recognizer/tree/main), and placed in the `trained_models` folder.
 
 ## CNN Model Architecture
 
@@ -53,7 +53,7 @@ The Godot engine project in `godot_project/` provides a user interface for inter
     ```
 3. Train the model (optional if you want to retrain):
    - Run `Model_training.ipynb` in Jupyter to train and save the model to `trained_models/model.pth`.
-   - OR download model from [huggingface](https://huggingface.co/Artificial-Intelligence-in-Medicine-AGH/handwritten-digits-recognizer/tree/main) to `trained_models` folder
+   - OR download model from [huggingface](https://huggingface.co/AI-MED-AGH/handwritten-digits-recognizer/tree/main) to `trained_models` folder
 4. Run the prediction server:
    ```sh
    python predict.py
@@ -62,6 +62,18 @@ The Godot engine project in `godot_project/` provides a user interface for inter
 5. Open the Godot project in Godot Engine 4.5 and edit project from `godot_project/` folder.
    - The UI will interact with `predict.py` via http requests for real-time digit recognition.
 
+
+### Optionally: running in Docker
+
+To run in docker, first build a docker image:
+```shell
+docker build -t handwritten-img .
+```
+
+Then run docker container with port redirected:
+```shell
+docker run -d --name handwritten -p 8001:8000 handwritten-img
+```
 
 ## Example Digits Recognized
 
