@@ -31,6 +31,8 @@ func _on_new_img_to_pred(image: Image) -> void:
 	_check_model_pred()
 
 
+@onready var api_conn = $ApiConnection
+
 func _check_model_pred() -> void:
 	if _waiting_for_pred:
 		return
@@ -38,23 +40,18 @@ func _check_model_pred() -> void:
 	_next_check_queued = false
 	_waiting_for_pred = true
 	
-	var input_data = PackedStringArray()
-	input_data.resize(28*28)
+	# Wywołanie nowej logiki HTTP
+	var proba = await api_conn.predict(_next_data_to_pred)
 	
-	var input_idx = 0
-	for i in range(_next_data_to_pred.size()):
-		input_data[input_idx] = str(_next_data_to_pred[i])
-		input_idx += 1
-	
-	_push_model_input(input_data)
-	
-	await _await_model_prediction()
+	if proba != null:
+		for i in proba.size():
+			proba[i] *= 255
+		digits_container.apply_preds(proba)
 	
 	_waiting_for_pred = false
 	
 	if _next_check_queued:
 		_check_model_pred()
-
 
 func _push_model_input(model_input: PackedStringArray) -> void:
 	var model_input_str = ",".join(model_input)
