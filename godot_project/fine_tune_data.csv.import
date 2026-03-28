@@ -2,7 +2,8 @@
 
 importer="csv_translation"
 type="Translation"
-uid="uid://b3ttkewgcolhk"
+uid="uid://b52ourc2p3drt"
+valid=false
 
 [deps]
 
@@ -10,7 +11,5 @@ source_file="res://fine_tune_data.csv"
 
 [params]
 
-compress=1
+compress=true
 delimiter=0
-unescape_keys=false
-unescape_translations=true

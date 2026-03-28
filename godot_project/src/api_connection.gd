@@ -1,12 +1,11 @@
 extends Node
 
-const API_URL = "http://0.0.0.0:8000"
+const API_URL = "http://127.0.0.1:8000"
 
 var req = HTTPRequest.new()
 
 func _ready() -> void:
 	add_child(req)
-
 
 func predict(img_data: PackedByteArray):
 	var data_dict = {
@@ -26,7 +25,6 @@ func predict(img_data: PackedByteArray):
 	var resp_packed = await req.request_completed
 	var result = resp_packed[0]
 	var resp_code = resp_packed[1]
-	var _resp_headers = resp_packed[2]
 	var resp_body: String = resp_packed[3].get_string_from_ascii()
 	var resp_dict = JSON.parse_string(resp_body)
 	
@@ -35,6 +33,5 @@ func predict(img_data: PackedByteArray):
 		return null
 	
 	var predicted_data: Dictionary = resp_dict["prediction"][0]
-	#var pred_class = predicted_data["label"]
 	var proba = predicted_data["proba"]
 	return proba

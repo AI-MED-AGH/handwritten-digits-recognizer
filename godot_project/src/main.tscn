@@ -5,7 +5,7 @@
 [ext_resource type="Script" uid="uid://b5u8dtd800hil" path="res://src/Canvas.gd" id="2_5q4o7"]
 [ext_resource type="PackedScene" uid="uid://cumrabrub5omu" path="res://src/Digit/Digit.tscn" id="3_3cfgd"]
 [ext_resource type="Script" uid="uid://hq7up0mikfcg" path="res://src/fine_tune_data_saver.gd" id="5_fyndt"]
-[ext_resource type="Script" uid="uid://qvowctr8jlwg" path="res://src/api_connection.gd" id="6_kmhfv"]
+[ext_resource type="Script" uid="uid://dvulw2k0o7tvj" path="res://src/api_connection.gd" id="6_kmhfv"]
 
 [node name="main" type="Control"]
 layout_mode = 3

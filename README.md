@@ -63,17 +63,18 @@ The Godot engine project in `godot_project/` provides a user interface for inter
    - The UI will interact with `predict.py` via http requests for real-time digit recognition.
 
 
-### Optionally: running in Docker
+## Fine tuning
 
-To run in docker, first build a docker image:
-```shell
-docker build -t handwritten-img .
-```
+When prediciton happens to be incorrect, user can click in Godot's UI on the digit that should be predicted instead.
+This will save new record to the `fine_tune_data.csv` file.
 
-Then run docker container with port redirected:
-```shell
-docker run -d --name handwritten -p 8001:8000 handwritten-img
-```
+The record will have following structure:
+
+in the first column, the ground truth (correct digit: 0-9) is saved. In the next 784 colums, each pixel value is stored
+as int (0-255). There is no headers row!
+
+This file can be used to fine-tune model using Fine_tunning.ipynm.
+
 
 ## Example Digits Recognized
 
