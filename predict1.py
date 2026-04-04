@@ -32,7 +32,7 @@ class ClassifierServer(MLController):
     request_model = RequestModel
 
     def load_model(self) -> MyModel:
-        PATH = "trained_models/model.pth"
+        PATH = "trained_models/model_fine_tuned.pth"
         model = MyModel()
         model.load_state_dict(torch.load(PATH, weights_only=True))
         return model
