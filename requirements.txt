@@ -6,3 +6,4 @@ pandas~=2.3.3
 fastmlapi
 pydantic
 scipy
+scikit-learn
