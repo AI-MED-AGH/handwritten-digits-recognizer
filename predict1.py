@@ -9,6 +9,7 @@ import torch
 
 transform = torchvision.transforms.Compose([torchvision.transforms.ToTensor()])
 
+
 class RequestModel(BaseModel):
     data: list[list[int]]
 
@@ -19,8 +20,10 @@ class RequestModel(BaseModel):
         assert data.min() >= 0, "data must be between 0-255"
         assert data.max() <= 255, "data must be between 0-255"
         assert data.ndim == 2, "Expected list of cases, each case being 784 int array"
-        assert data.shape[1] == (28 * 28), f"Images should be provided as a flat array of length 784, but length was {data.shape[1]}"
+        assert data.shape[1] == (
+                    28 * 28), f"Images should be provided as a flat array of length 784, but length was {data.shape[1]}"
         return data
+
 
 class ClassifierServer(MLController):
     model_name = "handwritten-digits-recognizer"
@@ -85,6 +88,7 @@ class ClassifierServer(MLController):
             for label, proba in zip(predicted_labels, probabilities)
         ]
         return response
+
 
 if __name__ == "__main__":
     ClassifierServer().run()
