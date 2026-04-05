@@ -1,7 +1,7 @@
 from torch import nn, Tensor
 import torch.nn.functional as func
 
-class Recognizer(nn.Sequential):
+class RecognizerV1(nn.Sequential):
     def __init__(self):
         super().__init__(
             # 1st convolution
