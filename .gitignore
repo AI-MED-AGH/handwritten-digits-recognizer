@@ -1,7 +1,7 @@
 # python directories to ignore
-.idea
-.venv
-venv
+.idea/
+.venv/
+venv/
 __pycache__/
 
 # dirs for local use
