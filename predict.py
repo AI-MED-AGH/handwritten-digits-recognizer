@@ -1,93 +1,70 @@
-import time
-
 import torchvision
-
-import matplotlib.pyplot as plt
+from fastmlapi import MLController, preprocessing, postprocessing, prediction
 import numpy as np
+from pydantic import BaseModel, field_validator
+
+from Model import MyModel
 import torch
 
-import traceback
-import os
-from Model import MyModel
-
-PATH = "trained_models/model.pth"
-DEBUG = False
-
-tranform = torchvision.transforms.Compose([torchvision.transforms.ToTensor()])
-
-model = MyModel()
-
-model.load_state_dict(torch.load(PATH, weights_only=True))
+transform = torchvision.transforms.Compose([torchvision.transforms.ToTensor()])
 
 
-INPUT_PIPE_NAME = "model_input.pipe"
-OUTPUT_PIPE_NAME = "model_output.pipe"
+class RequestModel(BaseModel):
+    data: list[list[int]]
 
-if not os.path.exists(INPUT_PIPE_NAME):
-    os.mkfifo(INPUT_PIPE_NAME)
+    @field_validator("data")
+    @classmethod
+    def validate_data(cls, raw_data: list[list[int]]) -> np.ndarray:
+        data = np.array(raw_data, dtype=int)
+        assert data.min() >= 0, "data must be between 0-255"
+        assert data.max() <= 255, "data must be between 0-255"
+        assert data.ndim == 2, "Expected list of cases, each case being 784 int array"
+        assert data.shape[1] == (28 * 28), f"Images should be provided as a flat array of length 784, but length was {data.shape[1]}"
 
-if not os.path.exists(OUTPUT_PIPE_NAME):
-    os.mkfifo(OUTPUT_PIPE_NAME)
+        return data
 
 
-print("==================================")
-print("   Model loaded, listening...")
-print("=================================\n")
+class ClassifierServer(MLController):
+    model_name = "handwritten-digits-recognizer"
+    model_version = "1.0.0"
 
+    request_model = RequestModel
 
-while True:
-    with open(INPUT_PIPE_NAME, 'r') as input_file:
-        pred_start_time = time.time()
+    def load_model(self):
+        PATH = "trained_models/model.pth"
+        model = MyModel()
+        model.load_state_dict(torch.load(PATH, weights_only=True))
+        return model
 
-        input_data = input_file.read().rstrip('\n')
-        input_data = input_data.split(',')
+    @preprocessing
+    def preprocess(self, data) -> torch.Tensor:
+        X = np.array(data, dtype=np.float32) / 255.0
+        X = X.reshape((-1, 1, 28, 28))
+        X_tensor = torch.from_numpy(X)
+        return X_tensor
 
-        # print("Strings array: ", input_data)
-
-        try:
-            X = np.array(input_data, dtype=np.float32) / 255.0
-            X = X.reshape((28,28))
-        except ValueError:
-            # Wrong size or something...
-            traceback.print_exc()
-            continue
-        
-        # print(f"Received: {X.shape} {X}")
-
+    @prediction
+    def prediction(self, X: torch.Tensor) -> torch.Tensor:
         with torch.no_grad():
-            x_tensor = torch.unsqueeze(tranform(X),0)
+            self.model.eval()
+            output = self.model(X)
+            return output
 
-            #print(f"{x_tensor=}")
-            output=model(x_tensor)
+    @postprocessing
+    def postprocess(self, probabilities) -> list:
+        probabilities: np.ndarray = np.exp(probabilities.numpy())
+        predicted_labels = np.argmax(probabilities, axis=1)
 
-            model.eval()
-            predictions: np.ndarray = np.squeeze(np.exp(output.numpy()))
-            
-        predicted_labels = np.argmax(predictions, axis=0)
-
-        
-        
-        if DEBUG:
-            model_predictions = {
-            str(i): round(predictions[i].item(), 3)
-            for i in range(10)
+        response = [
+            {
+                "label": label.tolist(),
+                "proba": proba.tolist()
             }
-            print(f"\n\n{model_predictions=}")
+            for label, proba in zip(predicted_labels, probabilities)
+        ]
 
-        pred_end_time = time.time()
-        
-        if DEBUG:
-            print(f"\nPrediction duration: {pred_end_time - pred_start_time} seconds")
+        return response
 
-        predictions: list[str] = (predictions * 255).flatten().astype(int).astype(str).tolist()
-        predictions = ",".join(predictions)
 
-        with open(OUTPUT_PIPE_NAME, "w") as output_file:
-            output_file.write(predictions)
-            output_file.flush()
-
-        if DEBUG:
-            plt.imshow(X.reshape(28, 28), cmap='gray')
-            plt.title(f"Predicted: {predicted_labels}")
-            plt.axis('off')
-            plt.savefig("debug_inputs/last.png")
+if __name__ == "__main__":
+    ClassifierServer().run()
