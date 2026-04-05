@@ -3,7 +3,7 @@ from fastmlapi import MLController, preprocessing, postprocessing, prediction
 import numpy as np
 from pydantic import BaseModel, field_validator
 
-from Model import MyModel
+from models.Model import MyModel
 import torch
 
 transform = torchvision.transforms.Compose([torchvision.transforms.ToTensor()])
