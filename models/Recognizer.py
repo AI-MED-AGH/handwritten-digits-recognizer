@@ -21,7 +21,7 @@ class RecognizerV1(nn.Sequential):
             nn.Flatten(),
 
             # 1st linear layer
-            nn.Linear(in_features=14*14, out_features=128), 
+            nn.Linear(in_features=3920, out_features=128), 
             nn.BatchNorm1d(128),
             nn.ReLU(),
             nn.Dropout(p=0.6),

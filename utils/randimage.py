@@ -83,6 +83,3 @@ class RandomLinesGenerator(RandomImageGenerator):
 
     def __call__(self, size: int = None, max_lines: int = None) -> torch.Tensor:
         return self.generate(size, max_lines)
-
-g = RandomLinesGenerator()
-save_image(g(), 'handwritten-digits-recognizer/Blanks/blank/im.png')
