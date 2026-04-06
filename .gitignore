@@ -12,3 +12,5 @@ MNIST/
 *.pth
 fine_tune_data.csv
 
+# datasets that can be generated or downloaded
+datasets/
