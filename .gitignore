@@ -1,10 +1,16 @@
-.idea
-venv
+# python directories to ignore
+.idea/
+.venv/
+venv/
 __pycache__/
-*.pipe
+
+# dirs for local use
 test.py
+*.pipe
 debug_inputs/
 MNIST/
 *.pth
 fine_tune_data.csv
 
+# datasets that can be generated or downloaded
+datasets/

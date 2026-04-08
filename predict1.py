@@ -4,7 +4,7 @@ import numpy as np
 from scipy.ndimage import center_of_mass, shift
 from pydantic import BaseModel, field_validator
 
-from Model import MyModel
+from models.Model import MyModel
 import torch
 
 transform = torchvision.transforms.Compose([torchvision.transforms.ToTensor()])
