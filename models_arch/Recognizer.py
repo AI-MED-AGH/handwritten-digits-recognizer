@@ -154,6 +154,7 @@ class RecognizerV3ker3(BaseRecognizer):
 
             save_path='trained_models/RecognizerV3ker3.pth'
         )
+        
 
 class RecognizerV3ker5(BaseRecognizer):
     def __init__(self):
