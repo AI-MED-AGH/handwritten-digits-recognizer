@@ -1,7 +1,50 @@
-from torch import nn, Tensor
-import torch.nn.functional as func
+import torch
+import torch.nn as nn
+import numpy as np
+from pathlib import Path
 
-class RecognizerV1(nn.Sequential):
+
+class BaseRecognizer(nn.Sequential):
+    def __init__(self, *args, save_path: Path|str = None):
+        super().__init__(*args)
+        if isinstance(save_path, str):
+            save_path = Path(save_path)
+        if not isinstance(save_path, Path):
+            raise ValueError(f'This is not a path: {path}')
+        
+        self.save_path: Path = save_path
+
+    @property
+    @torch.no_grad
+    def kernels(self) -> np.ndarray:
+        """Collect all kernels of conv layers of the model and put them in a np.ndarray
+
+        Returns:
+            np.ndarray: Array containing all kernels
+        """
+        kers = []
+        self.eval()
+        for layer in self:
+            if isinstance(layer, nn.Conv2d):
+                for k in layer.weight:
+                    kers.append(k)
+
+        return np.array(kers, dtype=float)
+
+    def save(self, path: Path|str = None):
+        if path is None:
+            path = self.save_path
+
+        torch.save(self.state_dict(), path)
+
+    def load(self, path: Path|str = None):
+        if path is None:
+            path
+
+        self.load_state_dict(torch.load(self.save_path, weights_only=True))
+
+
+class RecognizerV1(BaseRecognizer):
     def __init__(self):
         super().__init__(
             # 1st convolution
@@ -35,10 +78,12 @@ class RecognizerV1(nn.Sequential):
             # output layer with one shadow class
             nn.Linear(in_features=32, out_features=11),
 
-            nn.LogSoftmax()
+            nn.LogSoftmax(),
+
+            save_path='trained_models/RecognizerV1.pth'
         )
 
-class RecognizerV2(nn.Sequential):
+class RecognizerV2(BaseRecognizer):
     def __init__(self, *args):
         super().__init__(
             # 1st convolution
@@ -75,9 +120,11 @@ class RecognizerV2(nn.Sequential):
 
             # output layer with one shadow class
             nn.Linear(in_features=32, out_features=11),
+
+            save_path='trained_models/RecognizerV2.pth'
         )
 
-class RecognizerV3ker3(nn.Sequential):
+class RecognizerV3ker3(BaseRecognizer):
     def __init__(self):
         super().__init__(
             # 1st convolution
@@ -104,9 +151,11 @@ class RecognizerV3ker3(nn.Sequential):
 
             # output layer with one shadow class
             nn.Linear(in_features=64, out_features=11),
+
+            save_path='trained_models/RecognizerV3ker3.pth'
         )
 
-class RecognizerV3ker5(nn.Sequential):
+class RecognizerV3ker5(BaseRecognizer):
     def __init__(self):
         super().__init__(
             # 1st convolution
@@ -133,4 +182,31 @@ class RecognizerV3ker5(nn.Sequential):
 
             # output layer with one shadow class
             nn.Linear(in_features=64, out_features=11),
+
+            save_path='trained_models/RecognizerV3ker5.pth'
+        )
+
+class RecognizerOneConv(BaseRecognizer):
+    def __init__(self):
+        super().__init__(
+            # 1st convolution
+            nn.Conv2d(in_channels=1, out_channels=16, kernel_size=5, padding=2),
+            nn.BatchNorm2d(16),
+            nn.ReLU(),
+            nn.MaxPool2d(kernel_size=2), # shape : 16 x 14 x 14
+            nn.Dropout2d(p=0.3),
+
+            # Flatten data in order to feed it to linear layers
+            nn.Flatten(), # shape : 1568
+
+            # 1st linear layer
+            nn.Linear(in_features=3136, out_features=64), 
+            nn.BatchNorm1d(64),
+            nn.ReLU(),
+            nn.Dropout(p=0.3),
+
+            # output layer with one shadow class
+            nn.Linear(in_features=64, out_features=11),
+
+            save_path='trained_models/RecognizerOneConv.pth'
         )
