@@ -60,8 +60,7 @@ class RandomLinesGenerator(RandomImageGenerator):
             cy = curve[:, 1].view(1, 1, -1) # Shape: (1, 1, 100)
 
             # 5. Create grainy pencil texture 
-            # Fluctuate the intensity between 50% and 100% of the base_intensity
-            sigma = random.uniform(0.8, 1.2)   # spread of the line
+            sigma = random.uniform(0.9, 1.1)   # spread of the line
             intensity = 1.0
 
             # 6. Draw the brush strokes for all 100 points simultaneously
