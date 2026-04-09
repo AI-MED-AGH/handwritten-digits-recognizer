@@ -77,7 +77,7 @@ class RecognizerV2(nn.Sequential):
             nn.Linear(in_features=32, out_features=11),
         )
 
-class RecognizerV3(nn.Sequential):
+class RecognizerV3ker3(nn.Sequential):
     def __init__(self):
         super().__init__(
             # 1st convolution
@@ -88,6 +88,35 @@ class RecognizerV3(nn.Sequential):
             
             # 2nd convolution
             nn.Conv2d(in_channels=8, out_channels=16, kernel_size=3, padding=1),
+            nn.BatchNorm2d(16),
+            nn.ReLU(),
+            nn.MaxPool2d(kernel_size=2), # shape : 16 x 7 x 7 
+            nn.Dropout(p=0.3),
+
+            # Flatten data in order to feed it to linear layers
+            nn.Flatten(), # shape : 784
+
+            # 1st linear layer
+            nn.Linear(in_features=784, out_features=64), 
+            nn.BatchNorm1d(64),
+            nn.ReLU(),
+            nn.Dropout(p=0.5),
+
+            # output layer with one shadow class
+            nn.Linear(in_features=64, out_features=11),
+        )
+
+class RecognizerV3ker5(nn.Sequential):
+    def __init__(self):
+        super().__init__(
+            # 1st convolution
+            nn.Conv2d(in_channels=1, out_channels=8, kernel_size=5, padding=1),
+            nn.BatchNorm2d(8),
+            nn.ReLU(),
+            nn.MaxPool2d(kernel_size=2), # shape : 8 x 14 x 14 
+            
+            # 2nd convolution
+            nn.Conv2d(in_channels=8, out_channels=16, kernel_size=5, padding=1),
             nn.BatchNorm2d(16),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2), # shape : 16 x 7 x 7 
