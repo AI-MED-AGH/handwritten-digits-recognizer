@@ -110,13 +110,13 @@ class RecognizerV3ker5(nn.Sequential):
     def __init__(self):
         super().__init__(
             # 1st convolution
-            nn.Conv2d(in_channels=1, out_channels=8, kernel_size=5, padding=1),
+            nn.Conv2d(in_channels=1, out_channels=8, kernel_size=5, padding=2),
             nn.BatchNorm2d(8),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2), # shape : 8 x 14 x 14 
             
             # 2nd convolution
-            nn.Conv2d(in_channels=8, out_channels=16, kernel_size=5, padding=1),
+            nn.Conv2d(in_channels=8, out_channels=16, kernel_size=5, padding=2),
             nn.BatchNorm2d(16),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2), # shape : 16 x 7 x 7 
