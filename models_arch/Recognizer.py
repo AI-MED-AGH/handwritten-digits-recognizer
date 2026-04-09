@@ -194,10 +194,9 @@ class RecognizerOneConv(BaseRecognizer):
             nn.BatchNorm2d(16),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2), # shape : 16 x 14 x 14
-            nn.Dropout2d(p=0.3),
 
             # Flatten data in order to feed it to linear layers
-            nn.Flatten(), # shape : 1568
+            nn.Flatten(), # shape : 3136
 
             # 1st linear layer
             nn.Linear(in_features=3136, out_features=64), 
@@ -210,3 +209,13 @@ class RecognizerOneConv(BaseRecognizer):
 
             save_path='trained_models/RecognizerOneConv.pth'
         )
+
+    def kernel_preds(self, image: torch.Tensor):
+        if image.ndim < 4:
+            image = image.unsqueeze(0)
+        
+        model_preds = self[0](image)
+        self.eval()
+        return np.array([k for k in model_preds.squeeze()], dtype = float)
+
+            
