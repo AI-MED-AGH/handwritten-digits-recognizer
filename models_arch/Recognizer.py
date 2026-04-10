@@ -10,7 +10,7 @@ class BaseRecognizer(nn.Sequential):
         if isinstance(save_path, str):
             save_path = Path(save_path)
         if not isinstance(save_path, Path):
-            raise ValueError(f'This is not a path: {path}')
+            raise ValueError(f'This is not a path: {save_path}')
         
         self.save_path: Path = save_path
 
