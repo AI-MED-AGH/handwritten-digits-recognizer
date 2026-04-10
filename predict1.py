@@ -4,7 +4,7 @@ import numpy as np
 from scipy.ndimage import center_of_mass, shift
 from pydantic import BaseModel, field_validator
 
-from models.Model import MyModel
+from models_arch.Recognizer import RecognizerOneConv
 import torch
 
 transform = torchvision.transforms.Compose([torchvision.transforms.ToTensor()])
@@ -31,15 +31,14 @@ class ClassifierServer(MLController):
 
     request_model = RequestModel
 
-    def load_model(self) -> MyModel:
-        PATH = "trained_models/model_fine_tuned.pth"
-        model = MyModel()
+    def load_model(self) -> RecognizerOneConv:
+        PATH = "trained_models/RecognizerOneConv.pth"
+        model = RecognizerOneConv()
         model.load_state_dict(torch.load(PATH, weights_only=True))
         return model
 
     @preprocessing
     def preprocess(self, data) -> torch.Tensor:
-        from scipy.ndimage import center_of_mass, shift
         X = np.array(data, dtype=np.float32) / 255.0
         X = X.reshape((-1, 28, 28))
 
