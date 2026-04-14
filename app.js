@@ -43,8 +43,7 @@ function initGraph() {
 }
 
 function initCanvas() {
-    ctx.fillStyle = "black";
-    ctx.fillRect(0, 0, 28, 28);
+    ctx.clearRect(0, 0, 28, 28);
 
     canvas.onmousedown = () => isDrawing = true;
     window.onmouseup = () => {
@@ -68,8 +67,7 @@ function initCanvas() {
 }
 
 function clearCanvas() {
-    ctx.fillStyle = "black";
-    ctx.fillRect(0, 0, 28, 28);
+    ctx.clearRect(0, 0, 28, 28);
     weights.fill(0);
 }
 
