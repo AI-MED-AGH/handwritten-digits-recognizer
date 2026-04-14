@@ -1,31 +1,15 @@
 import torch
-import torch.nn as nn
 import torch.nn.functional as F
+import numpy as np
+from scipy.ndimage import center_of_mass, shift
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 
-# 1. ARCHITEKTURA ODTWORZONA NA PODSTAWIE TWOICH BŁĘDÓW
-class Net(nn.Module):
-    def __init__(self):
-        super(Net, self).__init__()
-        # Checkpoint mówi: conv1 ma 10 filtrów 5x5
-        self.conv1 = nn.Conv2d(1, 10, kernel_size=5)
-        # Checkpoint mówi: conv2 ma 20 filtrów 5x5, wchodzących 10
-        self.conv2 = nn.Conv2d(10, 20, kernel_size=5)
-        # Checkpoint mówi: fc1 ma 320 wejść i 50 wyjść
-        self.fc1 = nn.Linear(320, 50)
-        # Checkpoint mówi: fc2 ma 50 wejść i 10 wyjść
-        self.fc2 = nn.Linear(50, 10)
+# Import the model architecture from the external file
+from models_arch.Recognizer import RecognizerOneConv
 
-    def forward(self, x):
-        x = F.relu(F.max_pool2d(self.conv1(x), 2))
-        x = F.relu(F.max_pool2d(self.conv2(x), 2))
-        x = x.view(-1, 320) # Spłaszczenie do fc1
-        x = F.relu(self.fc1(x))
-        x = self.fc2(x)
-        return x
-
+# Initialize the FastAPI application
 app = FastAPI()
 
 app.add_middleware(
@@ -35,34 +19,88 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# 2. ŁADOWANIE MODELU
-model = Net()
-# Upewnij się, że nazwa pliku to dokładnie ta, którą masz na dysku!
-MODEL_PATH = "model.pth" 
+# Load the model
+model = RecognizerOneConv()
+MODEL_PATH = "trained_models/RecognizerOneConv.pth"
 
 try:
-    state_dict = torch.load(MODEL_PATH, map_location=torch.device('cpu'))
+    # Load weights into the model
+    state_dict = torch.load(MODEL_PATH, map_location=torch.device('cpu'), weights_only=True)
     model.load_state_dict(state_dict)
     model.eval()
-    print("Model załadowany pomyślnie!")
+    print("Model loaded successfully!")
 except FileNotFoundError:
-    print(f"BŁĄD: Nie znaleziono pliku {MODEL_PATH} w folderze serwera.")
+    print(f"ERROR: Model weights file not found at: {MODEL_PATH}")
 
-class DigitInput(BaseModel):
-    tensor: list[float]
 
+# Input validation schema
+class RequestModel(BaseModel):
+    data: list[list[int]]
+
+    @field_validator("data")
+    @classmethod
+    def validate_data(cls, raw_data: list[list[int]]) -> list[list[int]]:
+        data_np = np.array(raw_data, dtype=int)
+        assert data_np.min() >= 0, "Pixel values must be between 0 and 255"
+        assert data_np.max() <= 255, "Pixel values must be between 0 and 255"
+        assert data_np.ndim == 2, "Expected a list of images, each being a 784-element array"
+        assert data_np.shape[1] == (28 * 28), f"Images should have length 784, but got {data_np.shape[1]}"
+        return raw_data
+
+
+# Prediction endpoint
 @app.post("/predict")
-async def predict(data: DigitInput):
-    # Model oczekuje formatu (B, C, H, W) -> (1, 1, 28, 28)
-    input_tensor = torch.tensor(data.tensor, dtype=torch.float32).view(1, 1, 28, 28)
-    
+async def predict(request: RequestModel):
+    # --- PREPROCESSING ---
+    # Convert to float tensor scaled to 0.0 - 1.0
+    X = np.array(request.data, dtype=np.float32) / 255.0
+    X = X.reshape((-1, 28, 28))
+
+    processed_images = []
+    for image in X:
+        # Calculate the center of mass
+        c_y, c_x = center_of_mass(image)
+
+        # Handle completely empty (black) images
+        if np.isnan(c_x) or np.isnan(c_y):
+            processed_images.append(image)
+            continue
+
+        # Calculate shift vector to center the image at (13.5, 13.5)
+        shift_x = 13.5 - c_x
+        shift_y = 13.5 - c_y
+
+        # Apply the shift
+        shifted_image = shift(image, shift=(shift_y, shift_x), cval=0.0)
+        processed_images.append(shifted_image)
+
+    # Format input for the network (Batch Size, Channels, Height, Width)
+    X_centered = np.array(processed_images).reshape((-1, 1, 28, 28))
+    X_tensor = torch.from_numpy(X_centered)
+
+    # --- PREDICTION ---
     with torch.no_grad():
-        output = model(input_tensor)
-        # Zamiana na prawdopodobieństwa (0-1)
-        probabilities = F.softmax(output, dim=1)[0].tolist()
-        
-    return {"weights": probabilities}
+        output = model(X_tensor)
+
+    # --- POSTPROCESSING ---
+    # Convert logits to probabilities (0.0 - 1.0) using Softmax
+    probabilities = F.softmax(output, dim=1).numpy()
+    predicted_labels = np.argmax(probabilities, axis=1)
+
+    # Construct the response
+    response = [
+        {
+            "label": int(label),
+            "proba": proba.tolist(),
+        }
+        for label, proba in zip(predicted_labels, probabilities)
+    ]
+
+    return response
+
 
 if __name__ == "__main__":
     import uvicorn
+
+    # Run the server
     uvicorn.run(app, host="0.0.0.0", port=8000)

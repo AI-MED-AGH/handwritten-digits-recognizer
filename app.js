@@ -73,20 +73,33 @@ function clearCanvas() {
 
 async function predict() {
     const imgData = ctx.getImageData(0, 0, 28, 28).data;
-    const tensor = [];
-    
+    const flatPixels = [];
+
+    // Pobieramy tylko kanał czerwony (wartości od 0 do 255 typu int)
+    // Nie dzielimy przez 255.0, robi to teraz backend
     for (let i = 0; i < imgData.length; i += 4) {
-        tensor.push(imgData[i] / 255.0); 
+        flatPixels.push(imgData[i]);
     }
 
     try {
         const response = await fetch(API_URL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ tensor: tensor }),
+            // Zmieniono klucz na 'data' i dodano nawiasy kwadratowe, tworząc listę list
+            body: JSON.stringify({ data: [flatPixels] }),
         });
+
+        if (!response.ok) {
+            throw new Error(`Błąd HTTP: ${response.status}`);
+        }
+
         const result = await response.json();
-        weights = result.weights;
+
+        // Backend zwraca tablicę odpowiedzi dla całego batcha. Bierzemy indeks 0.
+        // Używamy slice(0, 10), aby pobrać prawdopodobieństwa tylko dla cyfr 0-9
+        // i zignorować klasę 'shadow' (indeks 10), która wywalała by błędy w rysowaniu grafu.
+        weights = result[0].proba.slice(0, 10);
+
     } catch (e) {
         console.error("Błąd API:", e);
     }
