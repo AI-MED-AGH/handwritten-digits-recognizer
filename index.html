@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Digit Recognizer</title>
+    <style>
+        body { 
+            background: #121212; color: white; font-family: sans-serif; 
+            display: flex; gap: 60px; justify-content: center; align-items: center; 
+            height: 100vh; margin: 0; 
+        }
+        #canvas-container { text-align: center; }
+        canvas { 
+            border: 2px solid #555; 
+            background-color: black;
+            background-image: linear-gradient(#222 1px, transparent 1px), linear-gradient(90deg, #222 1px, transparent 1px);
+            background-size: 10px 10px; 
+            image-rendering: pixelated; 
+            width: 280px; height: 280px; cursor: crosshair;
+        }
+        button { 
+            margin-top: 20px; padding: 12px 24px; cursor: pointer; 
+            background: #444; color: white; border: none; border-radius: 6px;
+            font-size: 16px; font-weight: bold;
+        }
+        button:hover { background: #666; }
+        
+        /* Zwiększona wysokość wizualizacji */
+        #viz-container { position: relative; width: 450px; height: 600px; }
+        
+        /* Większe węzły */
+        .node { fill: #2a2a2a; stroke: #555; stroke-width: 3; }
+        .node-text { 
+            fill: white; font-family: monospace; font-size: 24px; font-weight: bold; 
+            pointer-events: none; text-anchor: middle; 
+        }
+        .path-bg { stroke: #333; stroke-width: 2; fill: none; }
+        .bead { fill: #00ff88; filter: drop-shadow(0 0 4px #00ff88); }
+    </style>
+</head>
+<body>
+
+<div id="canvas-container">
+    <canvas id="inputCanvas" width="28" height="28"></canvas>
+    <div>
+        <button onclick="clearCanvas()">Wyczyść</button>
+    </div>
+</div>
+
+<div id="viz-container">
+    <svg id="treeSvg" width="450" height="600"></svg>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
