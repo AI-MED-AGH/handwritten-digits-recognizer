@@ -7,3 +7,5 @@ fastmlapi
 pydantic
 scipy
 scikit-learn
+uvicorn
+fastapi
