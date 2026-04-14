@@ -5,6 +5,7 @@ from scipy.ndimage import center_of_mass, shift
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, field_validator
+import os, csv
 
 # Import the model architecture from the external file
 from models_arch.Recognizer import RecognizerOneConv
@@ -97,6 +98,38 @@ async def predict(request: RequestModel):
     ]
 
     return response
+
+
+# Path to the fine-tuning data
+DATA_FOLDER = "fine-tuning-data-collector"
+CSV_FILE = os.path.join(DATA_FOLDER, "fine_tune_data.csv")
+
+# Create folder if it doesn't exist
+if not os.path.exists(DATA_FOLDER):
+    os.makedirs(DATA_FOLDER)
+
+
+class CollectionModel(BaseModel):
+    label: int
+    pixels: list[int]
+
+
+@app.post("/collect")
+async def collect_data(item: CollectionModel):
+    # Prepare header if file is new
+    file_exists = os.path.isfile(CSV_FILE)
+
+    with open(CSV_FILE, mode='a', newline='') as f:
+        writer = csv.writer(f)
+        # Optional: add header on first run
+        if not file_exists:
+            header = ["label"] + [f"pixel_{i}" for i in range(784)]
+            writer.writerow(header)
+
+        # Write label followed by flattened pixel list
+        writer.writerow([item.label] + item.pixels)
+
+    return {"status": "success", "message": f"Data for digit {item.label} saved."}
 
 
 if __name__ == "__main__":
