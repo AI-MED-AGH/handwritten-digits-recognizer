@@ -7,9 +7,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, field_validator
 import os, csv
 
-# Import the model architecture from the external file
-from models_arch.recognizer import RecognizerV3ker5 as MyModel
-
 # Initialize the FastAPI application
 app = FastAPI()
 
@@ -20,9 +17,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Import the model architecture from the external file
+from models_arch.recognizer import *
+
 # Load the model
-model = MyModel()
-MODEL_PATH = "trained_models/model_fine_tuned.pth"
+model = RecognizerV3ker5()  # Change recognizer if you have used different recognizer while model training
+MODEL_PATH = "trained_models/model_fine_tuned.pth"  # Change model path
 
 try:
     # Load weights into the model
