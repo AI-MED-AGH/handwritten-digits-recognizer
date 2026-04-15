@@ -22,7 +22,7 @@ app.add_middleware(
 
 # Load the model
 model = RecognizerOneConv()
-MODEL_PATH = "trained_models/RecognizerOneConv.pth"
+MODEL_PATH = "trained_models/model_fine_tuned.pth"
 
 try:
     # Load weights into the model
