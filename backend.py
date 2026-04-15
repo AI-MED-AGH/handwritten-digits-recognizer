@@ -4,6 +4,8 @@ import torch.nn.functional as F
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 
 # 1. ARCHITEKTURA ODTWORZONA NA PODSTAWIE TWOICH BŁĘDÓW
 class Net(nn.Module):
@@ -38,7 +40,7 @@ app.add_middleware(
 # 2. ŁADOWANIE MODELU
 model = Net()
 # Upewnij się, że nazwa pliku to dokładnie ta, którą masz na dysku!
-MODEL_PATH = "model.pth" 
+MODEL_PATH = "model.pth"
 
 try:
     state_dict = torch.load(MODEL_PATH, map_location=torch.device('cpu'))
@@ -62,6 +64,12 @@ async def predict(data: DigitInput):
         probabilities = F.softmax(output, dim=1)[0].tolist()
         
     return {"weights": probabilities}
+
+app.mount("/ui", StaticFiles(directory="."), name="ui")
+
+@app.get("/")
+async def read_index():
+    return FileResponse('index.html')
 
 if __name__ == "__main__":
     import uvicorn

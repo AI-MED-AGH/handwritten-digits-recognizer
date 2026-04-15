@@ -1,0 +1,39 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+venv/
+.venv/
+env/
+.env
+
+# --- JavaScript / Node.js ---
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.next/
+dist/
+build/
+
+# --- Pliki modeli i duże dane ---
+# Jeśli model.pth ma być wewnątrz obrazu, NIE dodawaj go tutaj.
+# Ale jeśli chcesz go pobierać dynamicznie lub montować jako wolumen, odkomentuj poniższe:
+# model.pth
+# checkpoints/
+*.pt
+*.onnx
+
+# --- Systemowe i IDE ---
+.git
+.gitignore
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# --- Docker ---
+Dockerfile
+docker-compose*
+.dockerignore

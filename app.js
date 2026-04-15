@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:8000/predict";
+const API_URL = "/predict";
 
 const canvas = document.getElementById('inputCanvas');
 const ctx = canvas.getContext('2d');
