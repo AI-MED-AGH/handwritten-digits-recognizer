@@ -8,7 +8,7 @@ from pydantic import BaseModel, field_validator
 import os, csv
 
 # Import the model architecture from the external file
-from models_arch.Recognizer import RecognizerV3ker5 as MyModel
+from models_arch.recognizer import RecognizerV3ker5 as MyModel
 
 # Initialize the FastAPI application
 app = FastAPI()
