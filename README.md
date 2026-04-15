@@ -10,7 +10,7 @@ running in the background.
 ## Trained model (TODO)
 
 Model weights (in .pth format) are excluded from this repository,
-and instead can be downloaded from [huggingface](https://huggingface.co/AI-MED-AGH/handwritten-digits-recognizer/tree/main), and placed in the `trained_models` folder.
+and instead can be downloaded from [huggingface](https://huggingface.co/K0D1Z/handwritten-digit-recognizer-agh-open-days/tree/main), and placed in the `trained_models` folder.
 
 ## CNN Model Architecture (TODO)
 
@@ -45,7 +45,7 @@ The CNN is a simple architecture with the following layers:
 3. (Optional) change model path and model architecture in `backend.py`, `model_training.ipynb` and `fine_tuning.ipynb` 
 4. Train the model (optional if you want to retrain):
    - Run `model_training.ipynb` in Jupyter to train and save the model to `trained_models/*` (by default `trained_models/RecognizerV3ker5.pth`).
-   - OR download model from [huggingface](https://huggingface.co/AI-MED-AGH/handwritten-digits-recognizer/tree/main) to `trained_models` folder to `trained_models/`
+   - OR download model from [huggingface](https://huggingface.co/K0D1Z/handwritten-digit-recognizer-agh-open-days/tree/main) to `trained_models` folder to `trained_models/`
 5. Use fine-tuning data to retrain the model:
    - Copy fine-tuning CSV file into `fine-tuning-data-collector/fine_tune_data.csv`
    - Run `fine_tuning.ipynb` in Jupyter to train and save the model to `trained_models/model_fine_tuned.pth`
