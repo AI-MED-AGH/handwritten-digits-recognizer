@@ -8,7 +8,7 @@ from pydantic import BaseModel, field_validator
 import os, csv
 
 # Import the model architecture from the external file
-from models_arch.Recognizer import RecognizerOneConv
+from models_arch.Recognizer import RecognizerV3ker5 as MyModel
 
 # Initialize the FastAPI application
 app = FastAPI()
@@ -21,7 +21,7 @@ app.add_middleware(
 )
 
 # Load the model
-model = RecognizerOneConv()
+model = MyModel()
 MODEL_PATH = "trained_models/model_fine_tuned.pth"
 
 try:
