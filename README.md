@@ -7,12 +7,12 @@ the Godot engine that allows users to draw digits and see
 real-time predictions performed by the CNN model 
 running in the background.
 
-## Trained model
+## Trained model (TODO)
 
 Model weights (in .pth format) are excluded from this repository,
 and instead can be downloaded from [huggingface](https://huggingface.co/AI-MED-AGH/handwritten-digits-recognizer/tree/main), and placed in the `trained_models` folder.
 
-## CNN Model Architecture
+## CNN Model Architecture (TODO)
 
 The CNN is a simple architecture with the following layers:
 
@@ -22,7 +22,7 @@ The CNN is a simple architecture with the following layers:
 - Dropout + Output fully connected layer with 10 units (one per digit) + LogSoftmax
 
 
-## Data and Training
+## Data and Training (TODO)
 
 - Dataset: MNIST handwritten digits, automatically downloaded and loaded using torchvision.
 - Training batch size: 64
@@ -31,15 +31,6 @@ The CNN is a simple architecture with the following layers:
 - Loss function: Negative Log Likelihood Loss (NLLLoss)
 - Training epochs: 3
 - Training loss and test accuracy are plotted during training (example accuracy on test set: ~97%).
-
-
-## Using the Godot UI with Real-time Predictions
-
-The Godot engine project in `godot_project/` provides a user interface for interactively drawing digits.
-
-- The UI writes handwritten digit data to a named pipe file `model_input.pipe`.
-- The Python script `predict.py` continuously reads from `model_input.pipe`, runs the CNN model prediction, and writes the predictions to `model_output.pipe`.
-- This setup allows real-time interaction where the user can see predictions instantly as digits are drawn.
 
 
 ## Setup and Installation
@@ -51,30 +42,19 @@ The Godot engine project in `godot_project/` provides a user interface for inter
     source venv/bin/activate
     pip install -r requirements.txt
     ```
-3. Train the model (optional if you want to retrain):
-   - Run `Model_training.ipynb` in Jupyter to train and save the model to `trained_models/model.pth`.
-   - OR download model from [huggingface](https://huggingface.co/AI-MED-AGH/handwritten-digits-recognizer/tree/main) to `trained_models` folder
-4. Run the prediction server:
+3. (Optional) change model path and model architecture in `backend.py`, `model_training.ipynb` and `fine_tuning.ipynb` 
+4. Train the model (optional if you want to retrain):
+   - Run `model_training.ipynb` in Jupyter to train and save the model to `trained_models/*` (by default `trained_models/RecognizerV3ker5.pth`).
+   - OR download model from [huggingface](https://huggingface.co/AI-MED-AGH/handwritten-digits-recognizer/tree/main) to `trained_models` folder to `trained_models/`
+5. Use fine-tuning data to retrain the model:
+   - Copy fine-tuning CSV file into `fine-tuning-data-collector/fine_tune_data.csv`
+   - Run `fine_tuning.ipynb` in Jupyter to train and save the model to `trained_models/model_fine_tuned.pth`
+6. Run the backend app using uvicorn:
    ```sh
-   python predict.py
+   uvicorn backend:app --reload --host 0.0.0.0 --port 8000
    ```
-
-5. Open the Godot project in Godot Engine 4.5 and edit project from `godot_project/` folder.
-   - The UI will interact with `predict.py` via http requests for real-time digit recognition.
-
-
-### Optionally: running in Docker
-
-To run in docker, first build a docker image:
-```shell
-docker build -t handwritten-img .
+7. Run the HTTP server:
+```sh
+python -m http.server 3000
 ```
-
-Then run docker container with port redirected:
-```shell
-docker run -d --name handwritten -p 8001:8000 handwritten-img
-```
-
-## Example Digits Recognized
-
-![img.png](readme_assets/example_recognitions.png)
+8. Paste `http://127.0.0.1:3000/` into your browser's URL bar
