@@ -2,6 +2,8 @@ FROM python:3.13
 
 WORKDIR /app
 
+ENV PIP_DEFAULT_TIMEOUT=1000
+
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 

@@ -7,13 +7,12 @@ the Godot engine that allows users to draw digits and see
 real-time predictions performed by the CNN model 
 running in the background.
 
-## Trained model (TODO)
+## Trained model 
 
 Model weights (in .pth format) are excluded from this repository,
 and instead can be downloaded from [huggingface](https://huggingface.co/K0D1Z/handwritten-digit-recognizer-agh-open-days/tree/main), and placed in the `trained_models` folder.
 
-## CNN Model Architecture (TODO)
-
+## CNN Model Architecture 
 The CNN is a simple architecture with the following layers:
 
 - Conv2d layer with 10 filters (kernel size 5) + ReLU + MaxPooling
@@ -22,7 +21,7 @@ The CNN is a simple architecture with the following layers:
 - Dropout + Output fully connected layer with 10 units (one per digit) + LogSoftmax
 
 
-## Data and Training (TODO)
+## Data and Training 
 
 - Dataset: MNIST handwritten digits, automatically downloaded and loaded using torchvision.
 - Training batch size: 64
@@ -61,8 +60,15 @@ python -m http.server 3000
 
 ### Setup using Docker
 1. Clone the repository 
-2. Build and start the container:
+2. Train the model (optional if you want to retrain):
+   - Run `model_training.ipynb` in Jupyter to train and save the model to `trained_models/*` (by default `trained_models/RecognizerV3ker5.pth`).
+   - OR download model from [huggingface](https://huggingface.co/K0D1Z/handwritten-digit-recognizer-agh-open-days/tree/main) to `trained_models` folder to `trained_models/`
+3. Build and start the container:
 ```sh
 docker-compose up --build
 ```
-3. Open your browser and navigate to: http://localhost:8000
+4. Open your browser and navigate to: http://localhost:8000
+
+### TODO
+
+1. Incorporate Pipeline for model training, ensuring no data leakage.
