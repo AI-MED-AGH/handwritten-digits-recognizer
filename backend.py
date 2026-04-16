@@ -4,6 +4,7 @@ import numpy as np
 from scipy.ndimage import center_of_mass, shift
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, field_validator
 import os, csv
 
@@ -131,6 +132,7 @@ async def collect_data(item: CollectionModel):
 
     return {"status": "success", "message": f"Data for digit {item.label} saved."}
 
+app.mount("/", StaticFiles(directory=".", html=True), name="static")
 
 if __name__ == "__main__":
     import uvicorn
