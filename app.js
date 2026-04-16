@@ -89,7 +89,7 @@ function spawnBeads() {
             if (w > 0.8) bead.style.filter = "drop-shadow(0 0 6px #00ff88)";
 
             svg.appendChild(bead);
-            activeBeads.push({el: bead, path: nodes[i].path, pos: 0, speed: 0.015});
+            activeBeads.push({el: bead, path: nodes[i].path, pos: 0, speed: 0.015, targetIndex: i, payload: 0.15});
         }
     });
 }
@@ -102,6 +102,7 @@ function updateBeads() {
         b.pos += b.speed;
 
         if (b.pos >= 1) {
+            displayedWeights[b.targetIndex] = Math.min(1.0, displayedWeights[b.targetIndex] + b.payload)
             b.el.remove();
             activeBeads.splice(i, 1);
         } else {
@@ -114,9 +115,7 @@ function updateBeads() {
     // Lighten up nodes (clear logic is handled by clearCanvas() which sets up weights.fill(0))
 
     for (let i = 0; i < 10; i++) {
-        displayedWeights[i] += (weights[i] - displayedWeights[i]) * 0.05;
         let dw = displayedWeights[i];
-
 
         // Calculate new node color
         // Base: (r: 42, g: 42, b: 42)
@@ -131,9 +130,14 @@ function updateBeads() {
         // Dynamically light up a node when the certainty level exceeds 5%
         if (dw > 0.05) {
             nodes[i].circle.style.filter = `drop-shadow(0 0 ${dw * 20} px rgba(0, 255, 136, ${dw}))`;
+        } else {
+            nodes[i].circle.style.filter = 'none';
         }
-        else {
-             nodes[i].circle.style.filter = 'none';
+
+        // Smoothly fade out a node glow
+        let decay = 0.01
+        if (displayedWeights[i] > 0) {
+            displayedWeights[i] = Math.max(0, displayedWeights[i] - decay);
         }
     }
 
@@ -177,16 +181,16 @@ function initGraph() {
 
     // nodes placement
     const nodePositions = [
-        { x: 100, y: 105 }, //0
-        { x: 250, y: 90 },  //1
-        { x: 400, y: 120 }, //2
-        { x: 550, y: 170 }, //3
-        { x: 670, y: 230 }, //4
-        { x: 670, y: 370 }, //5
-        { x: 550, y: 430 }, //6
-        { x: 400, y: 480 }, //7
-        { x: 250, y: 510 }, //8
-        { x: 100, y: 495 }  //9
+        {x: 100, y: 105}, //0
+        {x: 250, y: 90},  //1
+        {x: 400, y: 120}, //2
+        {x: 550, y: 170}, //3
+        {x: 670, y: 230}, //4
+        {x: 670, y: 370}, //5
+        {x: 550, y: 430}, //6
+        {x: 400, y: 480}, //7
+        {x: 250, y: 510}, //8
+        {x: 100, y: 495}  //9
     ];
 
 
@@ -207,7 +211,8 @@ function initGraph() {
         const cy1 = startY + (targetY - startY) * 0.0;
 
         const cx2 = startX + (targetX - startX) * 0.6;//0,6
-        const cy2 = targetY + (targetY - startY) * 0.0;;
+        const cy2 = targetY + (targetY - startY) * 0.0;
+
         path.setAttribute("d",
             `M ${startX} ${startY}
             C ${cx1} ${cy1},
