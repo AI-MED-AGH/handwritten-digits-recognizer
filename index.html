@@ -27,7 +27,6 @@
             background-repeat: no-repeat;
             background-position: center;
             background-size: 100%;
-            /*background-size: 10px 10px; */
             image-rendering: pixelated;
             width: 280px;
             height: 280px;
@@ -42,22 +41,21 @@
             color: white;
             border: none;
             border-radius: 6px;
-            font-size: 16px;
+            font-size: 22px;
             font-weight: bold;
+            transition: background-color 0.2s;
         }
 
         button:hover {
             background: #666;
         }
 
-        /* Zwiększona wysokość wizualizacji */
         #viz-container {
             position: relative;
             width: 450px;
             height: 600px;
         }
 
-        /* Większe węzły */
         .node {
             fill: #2a2a2a;
             stroke: #555;
@@ -67,7 +65,7 @@
         .node-text {
             fill: white;
             font-family: monospace;
-            font-size: 24px;
+            font-size: 32px;
             font-weight: bold;
             pointer-events: none;
             text-anchor: middle;
@@ -96,7 +94,6 @@
 
 <div id="viz-container">
     <svg id="treeSvg" width="1000" height="600"></svg>
-<!--    <svg id="treeSvg" viewBox="0 0 2000 1000"></svg>-->
 </div>
 
 <script src="app.js"></script>
