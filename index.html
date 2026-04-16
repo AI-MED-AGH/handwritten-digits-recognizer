@@ -2,108 +2,19 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <title>Handwritten Digit Recognizer</title>
-    <link rel="icon" type="image/x-icon" href="img/ai_med_secondary_logo.png">
-    <!--    Space Grotesk font import-->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
-    <style>
-        * {
-            font-family: "Space Grotesk", sans-serif;
-        }
-
-        body {
-            background: #231f20;
-            color: #dddee0;
-            display: flex;
-            gap: 60px;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-
-        #canvas-container {
-            text-align: center;
-        }
-
-        canvas {
-            border: 2px solid #555;
-            background-color: black;
-            background-image: linear-gradient(rgba(10, 10, 10, 0.95), rgba(10, 10, 10, 0.95)), url("img/ai_med_primary_logo.png");
-            background-repeat: no-repeat;
-            background-position: center;
-            background-size: 100%;
-            image-rendering: pixelated;
-            width: 280px;
-            height: 280px;
-            cursor: crosshair;
-        }
-
-        button {
-            margin-top: 20px;
-            padding: 12px 24px;
-            cursor: pointer;
-            background: #555;
-            width: 280px;
-            color: #dddee0;
-            border: none;
-            font-size: 24px;
-            font-weight: bold;
-            transition: background-color 0.2s;
-        }
-
-        button:hover {
-            background: #666;
-        }
-
-        #viz-container {
-            position: relative;
-            width: 600px;
-            height: 800px;
-        }
-
-        .node {
-            fill: #2a2a2a;
-            stroke: #555;
-            stroke-width: 2;
-            border-radius: 0;
-        }
-
-        .node-text {
-            fill: white;
-            font-family: monospace;
-            font-size: 36px;
-            font-weight: bold;
-            pointer-events: none;
-            text-anchor: middle;
-        }
-
-        .path-bg {
-            stroke: #333;
-            stroke-width: 2;
-            fill: none;
-        }
-
-        .bead {
-            fill: #00D170;
-            filter: drop-shadow(0 0 4px #00D170);
-        }
-    </style>
+    <title>Digit Recognizer</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <div id="canvas-container">
     <canvas id="inputCanvas" width="28" height="28"></canvas>
     <div>
-        <button onclick="clearCanvas()">WYCZYŚĆ</button>
+        <button onclick="clearCanvas()">Wyczyść</button>
     </div>
 </div>
 
-<div id="viz-container">
-    <svg id="treeSvg" width="600" height="800"></svg>
-</div>
+<svg id="treeSvg"></svg>
 
 <script src="app.js"></script>
 </body>

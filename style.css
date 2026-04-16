@@ -1,0 +1,97 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&display=swap');
+
+body {
+    background: #121212;
+    color: white;
+    font-family: sans-serif;
+    height: 100vh;
+    margin: 0;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#canvas-container {
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+canvas {
+    border: 2px solid #555;
+    outline: none;
+    box-sizing: border-box;
+    background-color: #0a0a0a;
+    background-image: linear-gradient(rgba(10, 10, 10, 0.9), rgba(10, 10, 10, 0.9)), url("img/ai_med_primary_logo.png");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    image-rendering: pixelated;
+    width: 280px;
+    height: 280px;
+    cursor: crosshair;
+}
+
+button {
+    padding: 12px 24px;
+    cursor: pointer;
+    background: #444;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 22px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    text-transform: uppercase; 
+    transition: background-color 0.2s;
+}
+
+button:hover {
+    background: #666;
+}
+
+#treeSvg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 1;
+    pointer-events: none; 
+}
+
+.node {
+    fill: #2a2a2a;
+    stroke: #555;
+    stroke-width: 3;
+    transition: fill 0.1s, stroke 0.1s, filter 0.1s;
+}
+
+.node.active {
+    stroke: #15B762;
+    filter: drop-shadow(0 0 10px #15B762);
+    transition: fill 0.3s, stroke 0.3s, filter 0.3s;
+}
+
+.node-text {
+    fill: white;
+    font-family: 'Space Grotesk', sans-serif;       
+    font-size: 48px;
+    font-weight: bold;
+    pointer-events: none;
+    text-anchor: middle;
+}
+
+.path-bg {
+    stroke: #333;
+    stroke-width: 2;
+    fill: none;
+}
+
+.bead {
+    fill: #15B762;
+    filter: drop-shadow(0 0 4px #15B762);
+}
