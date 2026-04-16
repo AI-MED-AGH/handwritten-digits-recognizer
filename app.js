@@ -8,6 +8,8 @@ let weights = Array(10).fill(0);
 let activeBeads = [];
 let nodes = [];
 
+let displayedWeights = Array(10).fill(0);
+
 function initCanvas() {
     ctx.clearRect(0, 0, 28, 28);
 
@@ -108,6 +110,33 @@ function updateBeads() {
             b.el.setAttribute("cy", point.y);
         }
     }
+
+    // Lighten up nodes (clear logic is handled by clearCanvas() which sets up weights.fill(0))
+
+    for (let i = 0; i < 10; i++) {
+        displayedWeights[i] += (weights[i] - displayedWeights[i]) * 0.05;
+        let dw = displayedWeights[i];
+
+
+        // Calculate new node color
+        // Base: (r: 42, g: 42, b: 42)
+        // Goal: (r: 0, g: 255, b: 136)
+        const r = Math.round(42 + (0 - 42) * dw);
+        const g = Math.round(42 + (255 - 42) * dw);
+        const b = Math.round(42 + (136 - 42) * dw);
+
+        // Set a new color to the node
+        nodes[i].circle.style.fill = `rgb(${r}, ${g}, ${b})`;
+
+        // Dynamically light up a node when the certainty level exceeds 5%
+        if (dw > 0.05) {
+            nodes[i].circle.style.filter = `drop-shadow(0 0 ${dw * 20} px rgba(0, 255, 136, ${dw}))`;
+        }
+        else {
+             nodes[i].circle.style.filter = 'none';
+        }
+    }
+
     requestAnimationFrame(updateBeads);
 }
 
@@ -211,7 +240,7 @@ function initGraph() {
         text.ondblclick = () => collectCurrentData(i);
 
         svg.appendChild(text);
-        nodes.push({path: path});
+        nodes.push({path: path, circle: circle});
     }
 }
 
