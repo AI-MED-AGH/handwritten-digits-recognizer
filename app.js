@@ -170,23 +170,14 @@ async function collectCurrentData(label) {
 }
 
 function initGraph() {
-    const startX = 20, startY = 300;
+    const startX = 20, startY = 400;
 
 
     // nodes placement
-    const nodePositions = [
-        {x: 100, y: 105}, //0
-        {x: 250, y: 90},  //1
-        {x: 400, y: 120}, //2
-        {x: 550, y: 170}, //3
-        {x: 670, y: 230}, //4
-        {x: 670, y: 370}, //5
-        {x: 550, y: 430}, //6
-        {x: 400, y: 480}, //7
-        {x: 250, y: 510}, //8
-        {x: 100, y: 495}  //9
-    ];
-
+    const nodePositions = Array.from({ length: 10 }, (_, i) => ({
+            x: 400,
+            y: 60 + (i * 76)
+        }));
 
     for (let i = 0; i < 10; i++) {
         const targetX = nodePositions[i].x;
@@ -194,31 +185,29 @@ function initGraph() {
 
         const angle = Math.atan2(targetY - startY, targetX - startX);
 
-        const endX = targetX - Math.cos(angle) * 52;
-        const endY = targetY - Math.sin(angle) * 52;
+        const size = 64;
 
         const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
         //path.setAttribute("d", `M ${startX} ${startY} C ${startX + 180} ${startY}, ${targetX} ${targetY + 180}, ${endX} ${endY}`);
 
-        //curve addjustment
-        const cx1 = startX + (targetX - startX) * 0.4;//0,4
+        //curve adjustment
+        const cx1 = startX + (targetX - startX) * 0.4;
         const cy1 = startY + (targetY - startY) * 0.0;
 
-        const cx2 = startX + (targetX - startX) * 0.6;//0,6
+        const cx2 = startX + (targetX - startX) * 0.6;
         const cy2 = targetY + (targetY - startY) * 0.0;
 
         path.setAttribute("d",
             `M ${startX} ${startY}
             C ${cx1} ${cy1},
             ${cx2} ${cy2},
-            ${endX} ${endY}`
+            ${targetX} ${targetY}`
         );
 
         path.setAttribute("class", "path-bg");
         svg.appendChild(path);
 
         const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-        const size = 104;
 
         rect.setAttribute("x", targetX - size / 2);
         rect.setAttribute("y", targetY - size / 2);
@@ -226,7 +215,7 @@ function initGraph() {
         rect.setAttribute("height", size);
 
         // Round node corners
-        rect.setAttribute("rx", "10");
+        rect.setAttribute("rx", "0");
         rect.setAttribute("class", "node");
 
         // Collect data on double-click on a node
