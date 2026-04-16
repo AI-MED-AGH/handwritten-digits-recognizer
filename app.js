@@ -7,6 +7,7 @@ let isDrawing = false;
 let weights = Array(10).fill(0);
 let activeBeads = [];
 let nodes = [];
+let greenColor = "#00D170"
 
 let displayedWeights = Array(10).fill(0);
 
@@ -76,7 +77,7 @@ function spawnBeads() {
             bead.setAttribute("r", radius);
             bead.setAttribute("class", "bead");
 
-            if (w > 0.8) bead.style.filter = "drop-shadow(0 0 6px #00ff88)";
+            if (w > 0.8) bead.style.filter = `drop-shadow(0 0 5px ${greenColor})`;
 
             svg.appendChild(bead);
             activeBeads.push({el: bead, path: nodes[i].path, pos: 0, speed: 0.015, targetIndex: i, payload: 0.15});
@@ -109,19 +110,22 @@ function updateBeads() {
 
         // Calculate new node color
         // Base: (r: 42, g: 42, b: 42)
-        // Goal: (r: 0, g: 255, b: 136)
+        // Goal: (r: 0, g: 209, b: 112)
         const r = Math.round(42 + (0 - 42) * dw);
-        const g = Math.round(42 + (255 - 42) * dw);
-        const b = Math.round(42 + (136 - 42) * dw);
+        const g = Math.round(42 + (209 - 42) * dw);
+        const b = Math.round(42 + (112 - 42) * dw);
 
         // Set a new color to the node
-        nodes[i].circle.style.fill = `rgb(${r}, ${g}, ${b})`;
+        nodes[i].shape.style.fill = `rgb(${r}, ${g}, ${b})`;
+
+        let stroke = Math.max(85, 255 * dw)
+        nodes[i].shape.style.stroke = `rgb(${stroke}, ${stroke}, ${stroke})`;
 
         // Dynamically light up a node when the certainty level exceeds 5%
         if (dw > 0.05) {
-            nodes[i].circle.style.filter = `drop-shadow(0 0 ${dw * 20} px rgba(0, 255, 136, ${dw}))`;
+            nodes[i].shape.style.filter = `drop-shadow(0 0 ${dw * 3}px rgba(0, 255, 136, ${dw}))`;
         } else {
-            nodes[i].circle.style.filter = 'none';
+            nodes[i].shape.style.filter = 'none';
         }
 
         // Smoothly fade out a node glow
@@ -157,7 +161,7 @@ async function collectCurrentData(label) {
         // Add visual feedback on double-click
         const nodeList = document.querySelectorAll('.node');
         const originalStroke = nodeList[label].style.stroke;
-        nodeList[label].style.stroke = "#00ff88";
+        nodeList[label].style.stroke = greenColor;
         setTimeout(() => nodeList[label].style.stroke = originalStroke, 500);
 
     } catch (e) {
@@ -213,16 +217,22 @@ function initGraph() {
         path.setAttribute("class", "path-bg");
         svg.appendChild(path);
 
-        const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-        circle.setAttribute("cx", targetX);
-        circle.setAttribute("cy", targetY);
-        circle.setAttribute("r", "52");
-        circle.setAttribute("class", "node");
+        const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+        const size = 104;
 
-        // Collect data on double-click on a circle
-        circle.ondblclick = () => collectCurrentData(i);
+        rect.setAttribute("x", targetX - size / 2);
+        rect.setAttribute("y", targetY - size / 2);
+        rect.setAttribute("width", size);
+        rect.setAttribute("height", size);
 
-        svg.appendChild(circle);
+        // Round node corners
+        rect.setAttribute("rx", "10");
+        rect.setAttribute("class", "node");
+
+        // Collect data on double-click on a node
+        rect.ondblclick = () => collectCurrentData(i);
+
+        svg.appendChild(rect);
 
         const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
         text.setAttribute("x", targetX);
@@ -235,7 +245,7 @@ function initGraph() {
         text.ondblclick = () => collectCurrentData(i);
 
         svg.appendChild(text);
-        nodes.push({path: path, circle: circle});
+        nodes.push({path: path, shape: rect});
     }
 }
 

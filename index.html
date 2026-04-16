@@ -31,6 +31,8 @@
             image-rendering: pixelated;
             width: 280px;
             height: 280px;
+            border-radius: 10px;
+            overflow: hidden;
             cursor: crosshair;
         }
 
@@ -39,6 +41,7 @@
             padding: 12px 24px;
             cursor: pointer;
             background: #444;
+            width: 280px;
             color: white;
             border: none;
             border-radius: 6px;
@@ -60,7 +63,7 @@
         .node {
             fill: #2a2a2a;
             stroke: #555;
-            stroke-width: 3;
+            stroke-width: 2;
         }
 
         .node-text {
@@ -79,8 +82,8 @@
         }
 
         .bead {
-            fill: #00ff88;
-            filter: drop-shadow(0 0 4px #00ff88);
+            fill: #00D170;
+            filter: drop-shadow(0 0 4px #00D170);
         }
     </style>
 </head>
@@ -89,7 +92,7 @@
 <div id="canvas-container">
     <canvas id="inputCanvas" width="28" height="28"></canvas>
     <div>
-        <button onclick="clearCanvas()">Wyczyść</button>
+        <button onclick="clearCanvas()">WYCZYŚĆ</button>
     </div>
 </div>
 
