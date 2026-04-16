@@ -8,40 +8,6 @@ let weights = Array(10).fill(0);
 let activeBeads = [];
 let nodes = [];
 
-function initGraph() {
-    // startY jest teraz niżej, by pasowało do środka wysokości 600px
-    const startX = 20, startY = 300;
-
-    for (let i = 0; i < 10; i++) {
-        // targetY ma większe odstępy (i * 57)
-        const targetX = 400, targetY = 40 + i * 57;
-
-        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-        path.setAttribute("d", `M ${startX} ${startY} C ${startX + 180} ${startY}, ${targetX - 180} ${targetY}, ${targetX} ${targetY}`);
-        path.setAttribute("class", "path-bg");
-        svg.appendChild(path);
-
-        const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-        // Promień zwiększony z 16 do 26
-        circle.setAttribute("cx", targetX);
-        circle.setAttribute("cy", targetY);
-        circle.setAttribute("r", "26");
-        circle.setAttribute("class", "node");
-        svg.appendChild(circle);
-
-        const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
-        text.setAttribute("x", targetX);
-        text.setAttribute("y", targetY);
-        // dy="0.35em" idealnie centruje tekst w pionie względem współrzędnej Y
-        text.setAttribute("dy", "0.35em");
-        text.setAttribute("class", "node-text");
-        text.textContent = i;
-        svg.appendChild(text);
-
-        nodes.push({path: path});
-    }
-}
-
 function initCanvas() {
     ctx.clearRect(0, 0, 28, 28);
 
@@ -179,18 +145,54 @@ async function collectCurrentData(label) {
 function initGraph() {
     const startX = 20, startY = 300;
 
+
+    // nodes placement
+    const nodePositions = [
+        { x: 100, y: 105 }, //0
+        { x: 250, y: 90 },  //1
+        { x: 400, y: 120 }, //2
+        { x: 550, y: 170 }, //3
+        { x: 670, y: 230 }, //4
+        { x: 670, y: 370 }, //5
+        { x: 550, y: 430 }, //6
+        { x: 400, y: 480 }, //7
+        { x: 250, y: 510 }, //8
+        { x: 100, y: 495 }  //9
+    ];
+
+
     for (let i = 0; i < 10; i++) {
-        const targetX = 400, targetY = 40 + i * 57;
+        const targetX = nodePositions[i].x;
+        const targetY = nodePositions[i].y;
+
+        const angle = Math.atan2(targetY - startY, targetX - startX);
+
+        const endX = targetX - Math.cos(angle) * 52;
+        const endY = targetY - Math.sin(angle) * 52;
 
         const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-        path.setAttribute("d", `M ${startX} ${startY} C ${startX + 180} ${startY}, ${targetX - 180} ${targetY}, ${targetX} ${targetY}`);
+        //path.setAttribute("d", `M ${startX} ${startY} C ${startX + 180} ${startY}, ${targetX} ${targetY + 180}, ${endX} ${endY}`);
+
+        //curve addjustment
+        const cx1 = startX + (targetX - startX) * 0.4;//0,4
+        const cy1 = startY + (targetY - startY) * 0.0;
+
+        const cx2 = startX + (targetX - startX) * 0.6;//0,6
+        const cy2 = targetY + (targetY - startY) * 0.0;;
+        path.setAttribute("d",
+            `M ${startX} ${startY}
+            C ${cx1} ${cy1},
+            ${cx2} ${cy2},
+            ${endX} ${endY}`
+        );
+
         path.setAttribute("class", "path-bg");
         svg.appendChild(path);
 
         const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
         circle.setAttribute("cx", targetX);
         circle.setAttribute("cy", targetY);
-        circle.setAttribute("r", "26");
+        circle.setAttribute("r", "52");
         circle.setAttribute("class", "node");
 
         // Collect data on double-click on a circle
