@@ -43,8 +43,6 @@ async function predict() {
     const imgData = ctx.getImageData(0, 0, 28, 28).data;
     const flatPixels = [];
 
-    // Pobieramy tylko kanał czerwony (wartości od 0 do 255 typu int)
-    // Nie dzielimy przez 255.0, robi to teraz backend
     for (let i = 0; i < imgData.length; i += 4) {
         flatPixels.push(imgData[i]);
     }
@@ -53,7 +51,6 @@ async function predict() {
         const response = await fetch(API_URL, {
             method: "POST",
             headers: {"Content-Type": "application/json"},
-            // Zmieniono klucz na 'data' i dodano nawiasy kwadratowe, tworząc listę list
             body: JSON.stringify({data: [flatPixels]}),
         });
 
@@ -63,9 +60,6 @@ async function predict() {
 
         const result = await response.json();
 
-        // Backend zwraca tablicę odpowiedzi dla całego batcha. Bierzemy indeks 0.
-        // Używamy slice(0, 10), aby pobrać prawdopodobieństwa tylko dla cyfr 0-9
-        // i zignorować klasę 'shadow' (indeks 10), która wywalała by błędy w rysowaniu grafu.
         weights = result[0].proba.slice(0, 10);
 
     } catch (e) {
@@ -75,17 +69,13 @@ async function predict() {
 
 function spawnBeads() {
     weights.forEach((w, i) => {
-        // Próg obniżony do 0.05 (5%) - pokazujemy alternatywne, mniej pewne wybory
-        // Gęstość silnie zależy od wagi (w * 0.4), pewność rzędu 90% wygeneruje ciągły strumień
         if (w > 0.05 && Math.random() < w * 0.4) {
             const bead = document.createElementNS("http://www.w3.org/2000/svg", "circle");
 
-            // Opcjonalnie: możemy też nieznacznie skalować wielkość koralika z wagą
             const radius = 2 + (w * 2);
             bead.setAttribute("r", radius);
             bead.setAttribute("class", "bead");
 
-            // Efekt pulsu/rozbłysku dla głównych wyników
             if (w > 0.8) bead.style.filter = "drop-shadow(0 0 6px #00ff88)";
 
             svg.appendChild(bead);
