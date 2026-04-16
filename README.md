@@ -34,7 +34,7 @@ The CNN is a simple architecture with the following layers:
 
 
 ## Setup and Installation
-
+### Standard setup
 1. Clone the repository
 2. Create a virtual environment and install the dependencies:
     ```sh
@@ -58,3 +58,11 @@ The CNN is a simple architecture with the following layers:
 python -m http.server 3000
 ```
 8. Paste `http://127.0.0.1:3000/` into your browser's URL bar
+
+### Setup using Docker
+1. Clone the repository 
+2. Build and start the container:
+```sh
+docker-compose up --build
+```
+3. Open your browser and navigate to: http://localhost:8000
